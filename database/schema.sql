@@ -1003,7 +1003,7 @@ CREATE TABLE `quotations` (
   `tax_amount` decimal(15,2) DEFAULT '0.00',
   `discount_amount` decimal(10,2) DEFAULT '0.00',
   `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('Draft','Pending','Approved','Rejected','Cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Draft',
+  `status` enum('Draft','Pending','Approved','Rejected','Cancelled','Invoiced') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Draft',
   `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_by` int NOT NULL,
   `approved_by` int DEFAULT NULL,
@@ -1614,6 +1614,41 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (1,'Admin','admin@autora.lk','$2b$10$NGs6vN71eAeV25k5oNL8LudtRq7ONKI2zdLURvO2BL09wLjti3eIO','Admin','active','2025-12-24 09:01:10','2026-08-04 08:37:40','2026-08-04 08:37:40'),(6,'Cordinator',NULL,'$2b$10$.P62nC0mluUeRrZWMkkOAeEHnuLMTP.3qBM3lUscMQE1smeFNLgmC','Cashier','active','2026-02-12 08:37:49','2026-07-23 04:20:59','2026-07-23 04:20:59'),(7,'Saman',NULL,'$2b$10$F4D1P4FwemLFRsWlnjwZteZC.wf.Xvq6cRidUp2NV8rS7N1oMS/ga','Admin','active','2026-02-13 04:10:32','2026-02-13 04:13:03','2026-02-13 04:13:03'),(8,'Tharaka',NULL,'$2b$10$QKbJHasTkxLKERHLJkQmj.XjAZBYAZJgvVOIgr2WuIUiYKtyRgVMq','Admin','active','2026-07-16 04:22:28','2026-08-03 17:05:44','2026-08-03 17:05:44');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `delivery_notes`
+--
+
+DROP TABLE IF EXISTS `delivery_notes`;
+CREATE TABLE `delivery_notes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `delivery_number` varchar(50) NOT NULL UNIQUE,
+  `sale_id` int NOT NULL,
+  `delivery_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('Pending','Shipped','Delivered','Cancelled') NOT NULL DEFAULT 'Pending',
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_delivery_notes_sale` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `delivery_note_items`
+--
+
+DROP TABLE IF EXISTS `delivery_note_items`;
+CREATE TABLE `delivery_note_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `delivery_note_id` int NOT NULL,
+  `item_id` int DEFAULT NULL,
+  `description` text NOT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_delivery_note_items_note` FOREIGN KEY (`delivery_note_id`) REFERENCES `delivery_notes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_delivery_note_items_item` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

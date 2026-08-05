@@ -7,7 +7,8 @@ import {
     createQuotation,
     updateQuotation,
     updateQuotationStatus,
-    deleteQuotation
+    deleteQuotation,
+    convertToInvoice
 } from '../controllers/quotation.controller.js';
 
 const router = express.Router();
@@ -40,6 +41,11 @@ router.put('/:id', checkPermission('quotations:create'), updateQuotation);
  * Update quotation status (Admin only for approval)
  */
 router.put('/:id/status', checkPermission('quotations:approve'), updateQuotationStatus);
+
+/**
+ * Convert quotation to invoice & delivery note (requires sales:create permission)
+ */
+router.post('/:id/convert', checkPermission('sales:create'), convertToInvoice);
 
 /**
  * Delete quotation (only if Draft)

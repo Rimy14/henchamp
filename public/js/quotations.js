@@ -289,6 +289,7 @@ function displayQuotations(quotations) {
         let statusClass = 'secondary';
         switch (quote.status) {
             case 'Approved': statusClass = 'success'; break;
+            case 'Invoiced': statusClass = 'info'; break;
             case 'Pending': statusClass = 'warning'; break;
             case 'Rejected': statusClass = 'danger'; break;
             case 'Cancelled': statusClass = 'danger'; break;
@@ -324,7 +325,12 @@ function displayQuotations(quotations) {
                                 <i class="fas fa-check"></i>
                             </button>
                         ` : ''}
-                        ${(quote.status !== 'Cancelled' && quote.status !== 'Rejected' && quote.status !== 'Approved') ? `
+                        ${(quote.status === 'Approved') ? `
+                            <button class="btn btn-sm btn-success" onclick="window.handleConvertToInvoice(${quote.id})" title="Convert to Invoice">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </button>
+                        ` : ''}
+                        ${(quote.status !== 'Cancelled' && quote.status !== 'Rejected' && quote.status !== 'Approved' && quote.status !== 'Invoiced') ? `
                             <button class="btn btn-sm btn-danger" onclick="window.handleUpdateStatus('Cancelled', ${quote.id})" title="Cancel">
                                 <i class="fas fa-ban"></i>
                             </button>
@@ -987,6 +993,41 @@ function handleUpdateStatus(status, id) {
 }
 
 window.handleUpdateStatus = handleUpdateStatus;
+
+/**
+ * Handle converting approved quotation to invoice & delivery note
+ */
+function handleConvertToInvoice(id) {
+    showConfirmationModal(
+        'Convert to Invoice',
+        'Are you sure you want to convert this quotation to an invoice? This will create a sales invoice, generate a delivery note, and deplete inventory.',
+        async () => {
+            loadingScreen.show('Converting quotation...');
+            try {
+                const response = await api.post(`/quotations/${id}/convert`, {});
+                if (response.success) {
+                    toast.success('Converted to invoice successfully!');
+                    
+                    // If view modal is open and has matching ID, hide it
+                    if (currentQuotation && currentQuotation.id === id) {
+                        hideViewQuotationModal();
+                    }
+                    
+                    loadQuotations(currentPage);
+                } else {
+                    messageModal.error(response.message || 'Failed to convert quotation', 'Conversion Failed');
+                }
+            } catch (error) {
+                console.error('Error converting quotation:', error);
+                messageModal.error(error.message || 'An error occurred during conversion', 'Error');
+            } finally {
+                loadingScreen.hide();
+            }
+        }
+    );
+}
+
+window.handleConvertToInvoice = handleConvertToInvoice;
 
 /**
  * Show confirmation modal
