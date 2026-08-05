@@ -20,6 +20,10 @@
 import logger from '../utils/logger.js';
 import * as accounting from '../services/isp/accounting.service.js';
 import * as voucherService from '../services/isp/voucher.service.js';
+import {
+ runBillingCycle
+}
+from '../services/billing/billing.service.js';
 
 const timers = [];
 let running = false;
