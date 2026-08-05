@@ -1,0 +1,152 @@
+<!-- ISP Vouchers (A2, A5) — hotspot codes and single-device locking -->
+
+<div class="page-actions">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <div class="form-group" style="margin: 0;">
+            <label>Status</label>
+            <select id="ispVoucherStatusFilter" class="form-control" style="width: 150px;">
+                <option value="">All</option>
+                <option value="unused">Unused</option>
+                <option value="active">In use</option>
+                <option value="used">Used</option>
+                <option value="expired">Expired</option>
+                <option value="revoked">Revoked</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Device Lock</label>
+            <select id="ispVoucherBoundFilter" class="form-control" style="width: 150px;">
+                <option value="">All</option>
+                <option value="true">Locked</option>
+                <option value="false">Not locked</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Search code</label>
+            <input type="text" id="ispVoucherSearch" class="form-control" style="width: 180px;"
+                   placeholder="e.g. HC7K2M">
+        </div>
+        <button id="ispVoucherFilterBtn" class="btn btn-secondary" style="margin-top: 1.5rem;">
+            <i class="fas fa-filter"></i> Apply
+        </button>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <button id="ispVoucherBatchesBtn" class="btn btn-secondary">
+            <i class="fas fa-layer-group"></i> Batches
+        </button>
+        <button id="ispVoucherGenerateBtn" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Generate Batch
+        </button>
+    </div>
+</div>
+
+<!-- A5 explainer: counter staff need to understand the reset button -->
+<div class="alert alert-info" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-left: 4px solid #2196f3; background: rgba(33,150,243,0.08);">
+    <strong><i class="fas fa-lock"></i> Single-device locking (A5)</strong><br>
+    <small>
+        A voucher locks to the first device that uses it and refuses every other device.
+        Phones that rotate their MAC address (iOS "Private Wi-Fi Address", Android
+        "Randomized MAC") can lock out the customer who paid — use
+        <strong>Reset Lock</strong> to free the code for their device. Repeated resets on
+        one voucher usually mean the code is being shared.
+    </small>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Batch</th>
+                <th>Package</th>
+                <th>Status</th>
+                <th>Locked To</th>
+                <th>Resets</th>
+                <th>First Used</th>
+                <th>Expires</th>
+                <th>Data Used</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ispVouchersBody">
+            <tr><td colspan="10" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="ispVoucherPagination" style="margin-top: 1rem;"></div>
+
+<!-- Generate batch modal -->
+<div id="ispVoucherModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-header">
+            <h3>Generate Voucher Batch</h3>
+            <button class="modal-close" id="ispVoucherModalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Hotspot Package *</label>
+                <select id="ispVoucherPackage" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>Quantity * (1–1000)</label>
+                <input type="number" id="ispVoucherQty" class="form-control" value="20" min="1" max="1000">
+            </div>
+            <div class="form-group">
+                <label>Code Length</label>
+                <input type="number" id="ispVoucherLen" class="form-control" value="8" min="6" max="16">
+                <small class="text-muted">
+                    Codes exclude 0/O and 1/I/L — the characters people misread on printed slips.
+                </small>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <input type="text" id="ispVoucherNotes" class="form-control"
+                       placeholder="e.g. Shop counter stock, August">
+            </div>
+            <p class="text-muted" style="font-size: 0.85rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Codes are shown <strong>once</strong> after generation and stored encrypted.
+                Print or copy them immediately — they cannot be retrieved later.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="ispVoucherCancelBtn">Cancel</button>
+            <button class="btn btn-primary" id="ispVoucherSaveBtn">Generate</button>
+        </div>
+    </div>
+</div>
+
+<!-- Generated codes output -->
+<div id="ispVoucherPrintModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3 id="ispVoucherPrintTitle">Generated Vouchers</h3>
+            <button class="modal-close" id="ispVoucherPrintClose">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="text-danger"><strong>These codes are shown only once.</strong></p>
+            <div id="ispVoucherPrintList" style="font-family: monospace; font-size: 1.1rem;
+                 display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="ispVoucherCopyBtn">
+                <i class="fas fa-copy"></i> Copy All
+            </button>
+            <button class="btn btn-primary" id="ispVoucherPrintBtn">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Batch summary -->
+<div id="ispBatchModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 820px;">
+        <div class="modal-header">
+            <h3>Voucher Batches</h3>
+            <button class="modal-close" id="ispBatchModalClose">&times;</button>
+        </div>
+        <div class="modal-body" id="ispBatchBody"></div>
+    </div>
+</div>
