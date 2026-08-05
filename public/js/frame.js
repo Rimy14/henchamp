@@ -230,6 +230,28 @@ export default class Frame {
                 </div>
                 ` : ''}
 
+                ${this.hasPermission('isp:read', ['Admin', 'Coordinator', 'Cashier']) ? `
+                <div class="nav-section">
+                    <div class="nav-section-title">ISP</div>
+                    <a href="#/isp" class="nav-link" data-route="/isp" data-tooltip="ISP Dashboard">
+                        <span class="nav-icon"><i class="fas fa-wifi"></i></span>
+                        <span>ISP Dashboard</span>
+                    </a>
+                    <a href="#/isp/subscribers" class="nav-link" data-route="/isp/subscribers" data-tooltip="Subscribers">
+                        <span class="nav-icon"><i class="fas fa-network-wired"></i></span>
+                        <span>Subscribers</span>
+                    </a>
+                    <a href="#/isp/vouchers" class="nav-link" data-route="/isp/vouchers" data-tooltip="Hotspot Vouchers">
+                        <span class="nav-icon"><i class="fas fa-ticket-alt"></i></span>
+                        <span>Vouchers</span>
+                    </a>
+                    <a href="#/isp/sessions" class="nav-link" data-route="/isp/sessions" data-tooltip="Live Sessions">
+                        <span class="nav-icon"><i class="fas fa-satellite-dish"></i></span>
+                        <span>Live Sessions</span>
+                    </a>
+                </div>
+                ` : ''}
+
                 ${canViewSystem ? `
                 <div class="nav-section">
                     <div class="nav-section-title">System</div>
