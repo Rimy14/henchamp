@@ -115,7 +115,7 @@ class Router {
             // Load and execute page script if specified
             if (route.script) {
                 const module = await import(route.script);
-                if (module.default) {
+                if (module.default && typeof module.default === 'function') {
                     await module.default();
                 } else if (route.init && module[route.init]) {
                     await module[route.init]();
