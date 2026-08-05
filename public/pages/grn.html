@@ -1,0 +1,140 @@
+<div class="page-actions">
+    <div class="search-box" style="flex: 1; max-width: 400px;">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search GRNs...">
+        </div>
+    </div>
+    <button id="addGRNBtn" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create GRN
+    </button>
+</div>
+
+
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>GRN #</th>
+                <th>PO #</th>
+                <th>Supplier</th>
+                <th>Received Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="grnTableBody">
+            <!-- Data will be populated here by grn.js -->
+        </tbody>
+    </table>
+    <div id="paginationContainer"></div>
+</div>
+
+<div id="grnModal" class="modal">
+    <div class="modal-content" style="max-width: 1200px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-truck-loading"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Create Goods Received Note</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Record incoming inventory deliveries against approved purchase orders</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="document.getElementById('grnModal').style.display='none'" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+        <form id="grnForm" style="margin: 0; display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+            <div style="padding: 1.5rem; flex: 1; overflow-y: auto;">
+                <div class="form-group">
+                <label>Purchase Order *</label>
+                <select id="grnPO" class="form-control" required>
+                    <option value="">Select PO...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Received Date *</label>
+                <input type="date" id="grnReceivedDate" class="form-control" required>
+            </div>
+
+            <!-- Barcode Scanner Input -->
+
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="grnNotes" class="form-control" rows="3"></textarea>
+            </div>
+            <div id="grnItemsContainer" class="items-container">
+                <p style="color: var(--gray-500);">Select a PO to see items</p>
+            </div>
+            </div>
+            <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+                <button type="button" id="cancelGRNBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create GRN</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="viewGRNModal" class="modal">
+    <div class="modal-content" style="max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">GRN Details</h2>
+                </div>
+            </div>
+            <button type="button" id="closeViewBtn" class="close-btn"
+                style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+        <div id="viewGRNContent" style="padding: 1.5rem; flex: 1; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<!-- GRN Rejection Reason Modal -->
+<div id="rejectGRNModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Reject GRN</h2>
+            <button id="closeRejectModal" class="close-btn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="alert alert-warning"
+                style="margin-bottom: 1.5rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: var(--radius-md); color: #856404;">
+                <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+                <strong>Warning:</strong> This action will reject the GRN. Please provide a reason.
+            </div>
+
+            <div class="form-group">
+                <label for="rejectReason" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                    <i class="fas fa-comment-alt" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                    Reason for Rejection *
+                </label>
+                <textarea id="rejectReason" class="form-control" rows="4"
+                    placeholder="Please provide a detailed reason for rejecting this GRN (minimum 10 characters)..."
+                    required style="resize: vertical; min-height: 100px;"></textarea>
+                <div id="rejectReasonError"
+                    style="color: var(--danger); font-size: 0.875rem; margin-top: 0.5rem; display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="rejectReasonErrorText">Please provide a reason (minimum 10 characters)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeRejectReasonModal()">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-danger" onclick="confirmRejection()">
+                <i class="fas fa-ban"></i> Confirm Rejection
+            </button>
+        </div>
+    </div>
+</div>

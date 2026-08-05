@@ -1,0 +1,368 @@
+<!-- Page Actions -->
+<div class="page-actions">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <div class="form-group" style="margin: 0;">
+            <label>Filter by Status</label>
+            <select id="statusFilter" class="form-control" style="width: 200px;">
+                <option value="">All Statuses</option>
+                <option value="Draft">Draft</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>From Date</label>
+            <input type="date" id="startDateFilter" class="form-control" style="width: 160px;">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>To Date</label>
+            <input type="date" id="endDateFilter" class="form-control" style="width: 160px;">
+        </div>
+        <button id="applyFiltersBtn" class="btn btn-secondary" style="margin-top: 1.5rem;">
+            <i class="fas fa-filter"></i> Apply Filters
+        </button>
+    </div>
+    <button id="createQuotationBtn" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create Quotation
+    </button>
+</div>
+
+<!-- Quotations Table -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Quote #</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Validity</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="quotationsTableBody">
+            <!-- Data will be populated here by quotations.js -->
+        </tbody>
+    </table>
+    <div id="paginationContainer"></div>
+</div>
+
+<!-- Create/Edit Quotation Modal -->
+<div id="quotationModal" class="modal">
+    <div class="modal-content" style="max-width: 1200px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <div>
+                    <h2 id="quotationModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Create Quotation</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Prepare client estimates and cost proposals</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.hideQuotationModal && window.hideQuotationModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="quotationForm" style="padding: 1.5rem; margin: 0; flex: 1; overflow-y: auto;">
+            <!-- Customer Selection Section -->
+            <div class="form-section">
+                <h3 style="margin-bottom: 1rem;">Customer Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Search Customer</label>
+                        <select id="customerSelect" class="form-control">
+                            <option value="">Select a customer...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quote Date *</label>
+                        <input type="date" id="quoteDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer Name *</label>
+                        <input type="text" id="customerName" class="form-control" placeholder="Enter customer name"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact</label>
+                        <input type="text" id="customerContact" class="form-control" placeholder="Phone or Email">
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label>Address</label>
+                        <textarea id="customerAddress" class="form-control" rows="2"
+                            placeholder="Customer address"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Validity Period (Days)</label>
+                        <input type="number" id="validityDays" class="form-control" min="1" value="7">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tax %</label>
+                        <input type="number" id="taxPercentage" class="form-control" min="0" max="100" step="0.01"
+                            value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Discount %</label>
+                        <input type="number" id="discountPercentage" class="form-control" min="0" max="100" step="0.01"
+                            value="0">
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label>Payment Terms</label>
+                        <textarea id="paymentTerms" class="form-control" rows="2" placeholder="e.g., Payment Terms - Payment Terms : 70%In Advance, balance After Completion. We will be happy to supply
+                                        any further information you may need and trust that you call on us to fill your order, which will receive
+                                        our prompt and careful attention."></textarea>
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label>Notes</label>
+                        <textarea id="quotationNotes" class="form-control" rows="2"
+                            placeholder="Additional notes"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Section -->
+            <div class="items-section">
+                <h3 style="margin-bottom: 1rem;">Quotation Items</h3>
+                <div class="item-input-row">
+                    <div class="form-group" style="margin: 0; flex: 2;">
+                        <label>Item</label>
+                        <select id="itemSelect" class="form-control">
+                            <option value="">Select item...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>Quantity</label>
+                        <input type="number" id="itemQuantity" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>Unit Price</label>
+                        <input type="number" id="itemUnitPrice" class="form-control" step="0.01" min="0">
+                    </div>
+                    <button type="button" id="addItemBtn" class="btn btn-primary"
+                        style="margin-top: 1.5rem;">Add</button>
+                    <button type="button" id="createNewItemBtn" class="btn btn-secondary" title="Create New Item"
+                        style="margin-top: 1.5rem;">
+                        <i class="fas fa-plus"></i> New Item
+                    </button>
+                </div>
+
+                <div class="quotation-items-table" style="margin-top: 1rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>UOM</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotationItemsTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--gray-500);">
+                                    No items added yet
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Totals -->
+            <div class="po-totals">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span id="quotationSubtotal">KSh 0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax:</span>
+                    <span id="quotationTax">KSh 0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Discount:</span>
+                    <span id="quotationDiscount">KSh 0.00</span>
+                </div>
+                <div class="total-row grand">
+                    <span>Total:</span>
+                    <span id="quotationTotal">KSh 0.00</span>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+                <button type="button" id="cancelQuotationBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="saveQuotationBtn" class="btn btn-primary">Create Quotation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Quotation Modal -->
+<div id="viewQuotationModal" class="modal">
+    <div class="modal-content" style="max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Quotation Details</h2>
+                </div>
+            </div>
+            <button type="button" class="close-btn"
+                onclick="window.hideViewQuotationModal && window.hideViewQuotationModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <div id="viewQuotationContent" style="padding: 1.5rem; flex: 1; overflow-y: auto;">
+            <!-- Quotation details will be loaded here -->
+        </div>
+
+        <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+            <button type="button" class="btn btn-secondary"
+                onclick="window.hideViewQuotationModal && window.hideViewQuotationModal()">Close</button>
+            <button type="button" id="printQuotationBtn" class="btn btn-primary">
+                <i class="fas fa-print"></i> Print
+            </button>
+            <button type="button" id="approveQuotationBtn" class="btn btn-success" style="display: none;">
+                <i class="fas fa-check"></i> Approve
+            </button>
+            <button type="button" id="rejectQuotationBtn" class="btn btn-danger" style="display: none;">
+                <i class="fas fa-times"></i> Reject
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="modal" style="z-index: 2000;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div class="modal-body" style="padding: 2rem 1rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--warning-color, #f39c12);"></i>
+            </div>
+            <h3 id="confirmationTitle" style="margin-bottom: 1rem;">Confirm Action</h3>
+            <p id="confirmationMessage" style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">Are you sure?</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeConfirmationModal()">No,
+                    Cancel</button>
+                <button type="button" id="confirmActionBtn" class="btn btn-primary">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Item Creation Modal (Shared structure from items.html/quotations.html) -->
+<div id="itemModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add New Item</h2>
+            <button type="button" class="close-btn"
+                onclick="window.hideItemModal && window.hideItemModal()">&times;</button>
+        </div>
+        <form id="itemForm">
+            <div class="form-grid">
+                <div class="form-group form-grid-full">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName" class="form-control" required>
+                </div>
+
+                <div class="form-group form-grid-full">
+                    <label>Description</label>
+                    <textarea id="itemDescription" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Base Category *</label>
+                    <select id="itemBaseCategory" class="form-control" required>
+                        <option value="">Select base category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Sub-Category *</label>
+                    <select id="itemSubCategory" class="form-control" required disabled>
+                        <option value="">Select base category first</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Unit of Measure *</span>
+                        <button type="button" id="addUomBtn" class="btn-icon-small" title="Add New Unit">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </label>
+                    <select id="itemUnit" class="form-control" required>
+                        <option value="">Loading units...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <select id="itemSupplier" class="form-control">
+                        <option value="">Select supplier...</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="sellingPriceGroup">
+                    <label id="sellingPriceLabel">Selling Price *</label>
+                    <input type="number" id="itemSellingPrice" class="form-control" step="0.01" min="0" value="0">
+                </div>
+
+                <div class="form-group" id="reorderLevelGroup">
+                    <label>Reorder Level *</label>
+                    <input type="number" id="itemReorder" class="form-control" min="0" value="0">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    onclick="window.hideItemModal && window.hideItemModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Inline UOM Creation Modal -->
+<div id="uomCreationModal" class="modal" style="z-index: 1200;">
+    <div class="modal-content" style="max-width: 400px; padding: 1.5rem;">
+        <div class="modal-header" style="margin-bottom: 1.5rem;">
+            <h2 id="uomModalTitle" style="margin: 0; font-size: 1.25rem;">Add Unit of Measure</h2>
+            <button type="button" class="close-btn" id="closeUomModal">&times;</button>
+        </div>
+
+        <form id="uomCreationForm">
+            <div class="form-group">
+                <label>Unit Name (e.g., Pieces) *</label>
+                <input type="text" id="newUomName" class="form-control" required placeholder="Pieces">
+            </div>
+            <div class="form-group">
+                <label>Short Name / Abbreviation *</label>
+                <input type="text" id="newUomShortName" class="form-control" required placeholder="pcs">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="newUomDescription" class="form-control" rows="2" placeholder="Optional description"></textarea>
+            </div>
+
+            <div class="modal-footer" style="padding-top: 1.5rem; border-top: 1px solid var(--gray-200); margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" id="cancelUomBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="saveUomBtn">Save Unit</button>
+            </div>
+        </form>
+    </div>
+</div>

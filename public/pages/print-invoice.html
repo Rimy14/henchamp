@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice — HenChamp Solutions Kenya</title>
+    <link rel="icon" href="/img/logo-emerald.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 30px 15px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .invoice-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Top Brand Header Banner */
+        .invoice-header-banner {
+            background: linear-gradient(135deg, #041710 0%, #0e4a35 100%);
+            color: #ffffff;
+            padding: 2.25rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-col {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .brand-logo {
+            height: 52px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .brand-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .brand-title span {
+            color: #a3e635;
+        }
+
+        .brand-sub {
+            font-size: 0.775rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+            font-weight: 500;
+        }
+
+        .invoice-type-badge {
+            text-align: right;
+        }
+
+        .invoice-type-badge h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            color: #a3e635;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .invoice-type-badge p {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-top: 0.2rem;
+        }
+
+        /* Main Content Wrapper */
+        .invoice-body {
+            padding: 2rem 2.5rem;
+        }
+
+        /* Meta Grid Section */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.75rem;
+            border-bottom: 2px dashed #e2e8f0;
+        }
+
+        .meta-box h3 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #0e4a35;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .company-details-list, .customer-details-list {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .company-details-list strong, .customer-details-list strong {
+            color: #0f172a;
+        }
+
+        .invoice-info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-row span:first-child {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .info-row span:last-child {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .items-table th {
+            background: #041710;
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.85rem 1rem;
+            text-align: left;
+        }
+
+        .items-table th:last-child, .items-table td:last-child {
+            text-align: right;
+        }
+
+        .items-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.875rem;
+            color: #334155;
+        }
+
+        .items-table tr:nth-child(even) td {
+            background: #fafafa;
+        }
+
+        .item-code-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            display: block;
+            margin-top: 0.15rem;
+        }
+
+        /* Totals & Notes Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+            margin-bottom: 2rem;
+        }
+
+        .payment-instructions-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 1.25rem;
+            font-size: 0.825rem;
+            color: #166534;
+        }
+
+        .payment-instructions-card h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0e4a35;
+        }
+
+        .totals-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            padding: 0.4rem 0;
+            color: #475569;
+        }
+
+        .totals-row.grand-total {
+            border-top: 2px solid #0e4a35;
+            margin-top: 0.5rem;
+            padding-top: 0.85rem;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0e4a35;
+        }
+
+        /* Footer */
+        .invoice-footer {
+            background: #041710;
+            color: #94a3b8;
+            padding: 1.25rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.775rem;
+        }
+
+        .invoice-footer a {
+            color: #a3e635;
+            text-decoration: none;
+        }
+
+        .print-btn-floating {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #0e4a35 0%, #166044 100%);
+            color: #ffffff;
+            border: none;
+            padding: 0.85rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(14, 74, 53, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            z-index: 9999;
+            transition: all 0.2s ease;
+        }
+
+        .print-btn-floating:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(14, 74, 53, 0.5);
+        }
+
+        /* Print Media Styles */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .invoice-container {
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .print-btn-floating {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="print-btn-floating" onclick="window.print()">
+        <i class="fas fa-print"></i> Print / Save PDF
+    </button>
+
+    <div class="invoice-container">
+        <!-- Brand Banner -->
+        <div class="invoice-header-banner">
+            <div class="brand-col">
+                <img src="/img/logo-white.png" alt="HenChamp Solutions" class="brand-logo">
+                <div>
+                    <h2 class="brand-title">HenChamp <span>Solutions</span></h2>
+                    <p class="brand-sub">Supply Chain, Industrial Packaging & Logistics</p>
+                </div>
+            </div>
+            <div class="invoice-type-badge">
+                <h1>OFFICIAL INVOICE</h1>
+                <p>KRA Tax Compliant ERP Document</p>
+            </div>
+        </div>
+
+        <div class="invoice-body">
+            <!-- Meta Grid -->
+            <div class="meta-grid">
+                <!-- Seller / Company -->
+                <div class="meta-box">
+                    <h3><i class="fas fa-building"></i> Issued By</h3>
+                    <div class="company-details-list">
+                        <strong>HenChamp Solutions Limited</strong><br>
+                        Industrial Area, Enterprise Road<br>
+                        Nairobi, Kenya<br>
+                        <strong>KRA PIN:</strong> P051234567Z | <strong>VAT No:</strong> 01928374<br>
+                        <strong>Phone:</strong> +254 700 123 456 / +254 722 987 654<br>
+                        <strong>Email:</strong> sales@solutions.henchamp.com
+                    </div>
+                </div>
+
+                <!-- Invoice Meta Details -->
+                <div class="invoice-info-card">
+                    <div class="info-row">
+                        <span>Invoice Number:</span>
+                        <span id="invNumber">INV-2026-0001</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Invoice Date:</span>
+                        <span id="invDate">04/08/2026</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Payment Status:</span>
+                        <span id="invStatusBadge" class="status-badge status-paid">PAID</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Payment Method:</span>
+                        <span id="invPayMethod">M-Pesa Express</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Cashier / Agent:</span>
+                        <span id="invCashier">Sales Operations Desk</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Billed To Banner -->
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0e4a35; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 0.8rem; text-transform: uppercase; color: #0e4a35; margin-bottom: 0.35rem; font-weight: 700;">
+                    <i class="fas fa-user-check"></i> Billed To / Customer Account
+                </h3>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #0f172a;" id="custName">
+                    Online / Walk-in Customer
+                </div>
+                <div style="font-size: 0.825rem; color: #64748b; margin-top: 0.2rem;" id="custDetails">
+                    Phone: +254 700 000 000 | Address: Nairobi HQ
+                </div>
+            </div>
+
+            <!-- Table of Items -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Item Description</th>
+                        <th style="width: 80px; text-align: center;">Qty</th>
+                        <th style="width: 120px; text-align: right;">Unit Price</th>
+                        <th style="width: 100px; text-align: right;">Discount</th>
+                        <th style="width: 130px; text-align: right;">Total (KES)</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
+                            Loading HenChamp ERP invoice details...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Summary & Instructions Grid -->
+            <div class="summary-grid">
+                <!-- Payment Instructions -->
+                <div class="payment-instructions-card">
+                    <h4><i class="fas fa-university"></i> Official Payment Details</h4>
+                    <p style="margin-bottom: 0.4rem;">
+                        <strong>Bank Account:</strong> HenChamp Solutions Ltd<br>
+                        <strong>Bank Name:</strong> KCB Bank Kenya (Enterprise Branch)<br>
+                        <strong>Account No:</strong> 1234 567 890 | <strong>Paybill:</strong> 400200
+                    </p>
+                    <p style="margin: 0; font-size: 0.775rem; color: #15803d;">
+                        * Please send M-Pesa transaction confirmation or deposit slip to <strong>sales@solutions.henchamp.com</strong> referencing your invoice number.
+                    </p>
+                </div>
+
+                <!-- Totals Breakdown -->
+                <div class="totals-card">
+                    <div class="totals-row">
+                        <span>Subtotal (VAT Excl.):</span>
+                        <span id="subtotalVal">KES 0.00</span>
+                    </div>
+                    <div class="totals-row" id="discountRow" style="display: none;">
+                        <span>Discount:</span>
+                        <span id="discountVal">- KES 0.00</span>
+                    </div>
+                    <div class="totals-row">
+                        <span>VAT (16% Standard):</span>
+                        <span id="taxVal">KES 0.00</span>
+                    </div>
+                    <div class="totals-row grand-total">
+                        <span>Total Payable:</span>
+                        <span id="grandTotalVal">KES 0.00</span>
+                    </div>
+                    <div class="totals-row" style="margin-top: 0.5rem; font-size: 0.8rem;">
+                        <span>Amount Paid:</span>
+                        <span id="paidVal" style="font-weight: 700; color: #15803d;">KES 0.00</span>
+                    </div>
+                    <div class="totals-row" style="font-size: 0.8rem;">
+                        <span>Balance Due:</span>
+                        <span id="balanceVal" style="font-weight: 700; color: #b45309;">KES 0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div>
+                Generated by <strong>HenChamp Solutions ERP System</strong> &bull; <a href="https://solutions.henchamp.com" target="_blank">solutions.henchamp.com</a>
+            </div>
+            <div>
+                Official Corporate Supply & Logistics Document
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to Load Data -->
+    <script type="module">
+        import api from '../js/api.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceId = urlParams.get('id');
+
+        if (invoiceId) {
+            loadInvoice(invoiceId);
+        }
+
+        async function loadInvoice(id) {
+            try {
+                const response = await api.sales.getById(id);
+
+                if (response.success) {
+                    renderInvoice(response.data);
+                    // Trigger print dialog automatically after render
+                    setTimeout(() => {
+                        window.print();
+                    }, 600);
+                } else {
+                    alert(`Failed to load invoice: ${response.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error loading invoice:', error);
+                alert(`Error loading invoice: ${error.message}`);
+            }
+        }
+
+
+        function renderInvoice(inv) {
+            document.getElementById('invNumber').textContent = inv.invoice_number || `INV-${inv.id}`;
+            document.getElementById('invDate').textContent = formatDate(inv.sale_date);
+            document.getElementById('invCashier').textContent = inv.cashier_name || 'HenChamp Desk';
+
+            // Payment Status & Method
+            const isPaid = (inv.payment_status && inv.payment_status.toLowerCase() === 'paid');
+            const statusBadge = document.getElementById('invStatusBadge');
+            statusBadge.textContent = isPaid ? 'PAID' : (inv.payment_status || 'PENDING').toUpperCase();
+            statusBadge.className = `status-badge ${isPaid ? 'status-paid' : 'status-pending'}`;
+
+            document.getElementById('invPayMethod').textContent = inv.payment_method || 'M-Pesa / Cash';
+
+            // Customer
+            document.getElementById('custName').textContent = inv.customer_name || 'Walk-in / Online Customer';
+            let custSub = [];
+            if (inv.customer_phone) custSub.push(`Phone: ${inv.customer_phone}`);
+            if (inv.customer_email) custSub.push(`Email: ${inv.customer_email}`);
+            if (inv.notes) custSub.push(`Notes: ${inv.notes}`);
+            document.getElementById('custDetails').textContent = custSub.join(' | ') || 'HenChamp Customer Account';
+
+            // Items Table
+            const tbody = document.getElementById('itemsTableBody');
+            if (inv.items && inv.items.length > 0) {
+                tbody.innerHTML = inv.items.map((item, idx) => {
+                    const price = parseFloat(item.unit_price || 0);
+                    const qty = parseFloat(item.quantity || 0);
+                    const disc = parseFloat(item.discount_amount || 0);
+                    const total = (price * qty) - disc;
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 700; color: #64748b;">${idx + 1}</td>
+                            <td>
+                                <strong>${escapeHtml(item.item_name || item.name || 'HenChamp Item')}</strong>
+                                <span class="item-code-tag">SKU: ${item.code || 'TBM-001'}</span>
+                            </td>
+                            <td style="text-align: center; font-weight: 700;">${qty}</td>
+                            <td style="text-align: right;">KES ${price.toFixed(2)}</td>
+                            <td style="text-align: right; color: #64748b;">${disc > 0 ? '- KES ' + disc.toFixed(2) : '-'}</td>
+                            <td style="text-align: right; font-weight: 700; color: #0e4a35;">KES ${total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b;">No items recorded.</td></tr>`;
+            }
+
+            // Totals
+            const totalAmt = parseFloat(inv.total_amount || 0);
+            const subtotal = parseFloat(inv.subtotal || totalAmt / 1.16);
+            const taxAmt = parseFloat(inv.tax_amount || (totalAmt - subtotal));
+            const discAmt = parseFloat(inv.discount_amount || 0);
+
+            document.getElementById('subtotalVal').textContent = `KES ${subtotal.toFixed(2)}`;
+            document.getElementById('taxVal').textContent = `KES ${taxAmt.toFixed(2)}`;
+            document.getElementById('grandTotalVal').textContent = `KES ${totalAmt.toFixed(2)}`;
+
+            if (discAmt > 0) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountVal').textContent = `- KES ${discAmt.toFixed(2)}`;
+            }
+
+            // Calculate paid amount
+            let paidTotal = 0;
+            if (isPaid) {
+                paidTotal = totalAmt;
+            } else if (inv.payments && inv.payments.length > 0) {
+                paidTotal = inv.payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+            }
+
+            const balanceDue = Math.max(0, totalAmt - paidTotal);
+
+            document.getElementById('paidVal').textContent = `KES ${paidTotal.toFixed(2)}`;
+            document.getElementById('balanceVal').textContent = `KES ${balanceDue.toFixed(2)}`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function formatDate(dStr) {
+            if (!dStr) return 'N/A';
+            const d = new Date(dStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+    </script>
+</body>
+
+</html>

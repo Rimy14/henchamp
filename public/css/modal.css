@@ -1,0 +1,404 @@
+/* =====================================================
+   MODAL COMPONENT STYLES
+   ===================================================== */
+
+/* Base Modal Container */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    /* Dark semi-transparent backdrop - dims page behind */
+    z-index: var(--z-modal);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Active State - triggered by JS */
+.modal.active,
+.modal.show,
+/* Supporting both .active and .show conventions */
+.modal[style*="display: flex"],
+.modal[style*="display: block"] {
+    display: flex !important;
+    /* Force flexbox layout and visibility */
+}
+
+/* Modal Content Card */
+.modal-content {
+    background: white !important;
+    /* Solid white - modal content should not be transparent */
+    border-radius: var(--radius-xl);
+    padding: 0;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-2xl);
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-header {
+    flex-shrink: 0;
+}
+
+.modal-content > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.modal-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(20px) scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.modal-header h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+/* Close Button */
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+}
+
+.close-btn:hover {
+    background: var(--gray-100);
+    color: var(--danger);
+    transform: rotate(90deg);
+}
+
+/* Modal Body/Form Areas */
+.modal-body {
+    margin-bottom: 1.5rem;
+}
+
+/* Modal Footer/Actions */
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Scrollbar for modal content */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+        max-height: 85vh;
+    }
+
+    .modal-header h2 {
+        font-size: var(--text-xl);
+    }
+}
+
+/* =====================================================
+   MESSAGE MODAL OVERLAY (Global Message Modal)
+   ===================================================== */
+
+/* Modal overlay for message-modal.js */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    /* Dark semi-transparent backdrop - dims page behind */
+    z-index: 10000;
+    /* Higher than sidebar (var(--z-fixed) = 1030) and loading overlay */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.show {
+    display: flex !important;
+}
+
+/* Modal container for message modal */
+.modal-overlay .modal-container {
+    background: white !important;
+    /* Solid white - modal content should not be transparent */
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Spacing for modal-container internal elements */
+.modal-overlay .modal-header {
+    padding: 1.5rem 2rem;
+    margin: 0;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.modal-overlay .modal-header h3 {
+    margin: 0;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.modal-overlay .modal-body {
+    padding: 1.5rem 2rem;
+}
+
+.modal-overlay .modal-footer {
+    padding: 1rem 2rem 1.5rem;
+    margin: 0;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* Utility button styles for message modal */
+.btn-icon {
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--gray-500);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+    padding: 0;
+}
+
+.btn-icon:hover {
+    background: var(--gray-100);
+    color: var(--danger);
+}
+
+/* Close button for modal-overlay modals */
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.modal-close:hover {
+    background: var(--gray-100);
+    color: var(--danger);
+    transform: rotate(90deg);
+}
+
+/* =====================================================
+   P&L BREAKDOWN MODAL STYLES
+   ===================================================== */
+#profitLossBreakdownModal .modal-content {
+    max-width: 700px;
+}
+
+#profitLossBreakdownModal .modal-body {
+    padding: 1.5rem 2rem;
+    color: var(--gray-800);
+    font-size: 0.95rem;
+}
+
+#profitLossBreakdownModal h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-700);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 0.5rem;
+}
+
+#profitLossBreakdownModal .summary-section {
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: var(--gray-50);
+}
+
+#profitLossBreakdownModal .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed var(--gray-200);
+}
+
+#profitLossBreakdownModal .summary-item:last-child {
+    border-bottom: none;
+}
+
+#profitLossBreakdownModal .summary-item .label {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+#profitLossBreakdownModal .summary-item .value {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+#profitLossBreakdownModal .summary-item.total-item {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding-top: 0.8rem;
+    border-top: 2px solid var(--gray-400);
+    margin-top: 0.8rem;
+}
+
+#profitLossBreakdownModal .summary-item.total-item .value {
+    color: var(--primary-800);
+}
+
+#profitLossBreakdownModal .monthly-costs-section {
+    margin-bottom: 1.5rem;
+}
+
+#profitLossBreakdownModal .monthly-costs-section h3 {
+    color: var(--warning-700);
+    border-color: var(--warning-200);
+}
+
+#profitLossBreakdownModal .monthly-costs-section .summary-item {
+    background-color: var(--light);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.4rem;
+    border: 1px solid var(--gray-200);
+}
+
+#profitLossBreakdownModal .monthly-costs-section .summary-item:last-of-type {
+    margin-bottom: 0;
+}
+
+
+#profitLossBreakdownModal .final-summary .total-item {
+    font-size: 1.25rem;
+    padding: 0.8rem 0;
+}
+
+#profitLossBreakdownModal .final-summary #breakdownNetProfit {
+    color: var(--success-dark);
+}
+
+#profitLossBreakdownModal .final-summary #breakdownProfitMargin {
+    color: var(--info-dark);
+}
+
+/* Responsive adjustments for the breakdown modal */
+@media (max-width: 768px) {
+    #profitLossBreakdownModal .modal-content {
+        padding: 1rem;
+    }
+
+    #profitLossBreakdownModal .modal-body {
+        padding: 1rem;
+    }
+
+    #profitLossBreakdownModal h3 {
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 0.8rem;
+    }
+    #profitLossBreakdownModal .summary-item.total-item {
+        font-size: 1rem;
+    }
+}

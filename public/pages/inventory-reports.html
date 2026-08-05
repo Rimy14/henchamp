@@ -1,0 +1,275 @@
+<!-- Enterprise Inventory Reports Page -->
+<div class="content-area">
+    <!-- Page Header & Action Bar -->
+    <div class="report-section page-header-wrapper" style="margin-bottom: 1.5rem;">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 style="display: flex; align-items: center; gap: 0.75rem; margin: 0; font-weight: 700; color: var(--text-color, #1e293b);">
+                    <i class="fas fa-chart-line" style="color: #0e4a35; background: rgba(14, 74, 53, 0.1); padding: 0.6rem; border-radius: 10px;"></i> 
+                    Inventory Intelligence & Telemetry
+                </h2>
+
+                <p style="margin: 0.3rem 0 0 0; color: var(--text-muted, #64748b); font-size: 0.875rem;">
+                    Real-time stock valuation, health metrics, and automated reorder alerts for Finished Goods.
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="live-indicator-badge" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px; color: #10b981; font-size: 0.8rem; font-weight: 600;">
+                    <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #10b981;"></span>
+                    Live Telemetry
+                </span>
+                <button class="btn btn-sm btn-secondary" id="refreshReportBtn" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500;">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Segmented Tab Navigation -->
+        <div class="tabs enterprise-tabs" style="margin-top: 1.5rem; display: flex; gap: 0.75rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;">
+            <button class="tab enterprise-tab active" data-tab="currentStock" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; padding: 0.65rem 1.35rem; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); color: #ffffff; box-shadow: 0 4px 14px rgba(14, 74, 53, 0.3); transition: all 0.2s;">
+                <i class="fas fa-boxes" style="color: #a3e635;"></i> Current Stock & Valuation
+            </button>
+            <button class="tab enterprise-tab" data-tab="lowStock" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; padding: 0.65rem 1.35rem; border-radius: 10px; border: 1px solid #cbd5e1; cursor: pointer; background: #f1f5f9; color: #64748b; transition: all 0.2s;">
+                <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i> Low Stock & Reorder Alerts
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Current Stock Tab -->
+    <div id="currentStockTab" class="tab-content active">
+        <div id="currentStockReportSection" class="report-section-card">
+            
+            <!-- Enterprise Filter Toolbar -->
+            <div class="report-toolbar" style="background: var(--surface-color, #ffffff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; align-items: center;">
+                    
+                    <!-- Search Input -->
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="stockSearchInput" placeholder="Search by Code, Item Name..." class="form-control" style="padding-left: 2.5rem; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; height: 42px;">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div>
+                        <select id="stockCategoryFilter" class="form-control" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; height: 42px;">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div>
+                        <select id="stockStatusFilter" class="form-control" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; height: 42px;">
+                            <option value="">All Stock Statuses</option>
+                            <option value="In Stock">In Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Toolbar -->
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button class="btn btn-sm btn-secondary" onclick="exportSectionToJPEG('currentStockReportSection', 'Current_Stock_Report')" title="Export visual summary as image" style="height: 42px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i class="fas fa-image"></i> JPEG
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="exportCurrentStockToExcel()" title="Export full report to Excel" style="height: 42px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sleek Enterprise Metric KPI Cards -->
+            <div id="currentStockSummary" class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                
+                <!-- Total Valuation Card -->
+                <div class="kpi-card" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.5rem; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; font-weight: 600; margin-bottom: 0.4rem;">
+                            Total Inventory Asset Value
+                        </div>
+                        <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8;" id="totalStockValue">KSh 0.00</div>
+                        <div style="font-size: 0.75rem; color: #cbd5e1; margin-top: 0.2rem;">Shop finished goods valuation</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(56, 189, 248, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-coins" style="font-size: 1.4rem; color: #38bdf8;"></i>
+                    </div>
+                </div>
+
+                <!-- Total Items Card -->
+                <div class="kpi-card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; margin-bottom: 0.4rem;">
+                            Total Tracked SKUs
+                        </div>
+                        <div style="font-size: 1.6rem; font-weight: 800; color: #0f172a;" id="totalItemsCount">0</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">Finished Goods items</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(132, 204, 22, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-cubes" style="font-size: 1.4rem; color: #166044;"></i>
+                    </div>
+                </div>
+
+                <!-- Low Stock Card -->
+                <div class="kpi-card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #d97706; font-weight: 600; margin-bottom: 0.4rem;">
+                            Low Stock Items
+                        </div>
+                        <div style="font-size: 1.6rem; font-weight: 800; color: #d97706;" id="lowStockItemsCount">0</div>
+                        <div style="font-size: 0.75rem; color: #92400e; margin-top: 0.2rem;">At or below reorder level</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1.4rem; color: #f59e0b;"></i>
+                    </div>
+                </div>
+
+                <!-- Out of Stock Card -->
+                <div class="kpi-card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #dc2626; font-weight: 600; margin-bottom: 0.4rem;">
+                            Out of Stock SKUs
+                        </div>
+                        <div style="font-size: 1.6rem; font-weight: 800; color: #dc2626;" id="outOfStockCount">0</div>
+                        <div style="font-size: 0.75rem; color: #991b1b; margin-top: 0.2rem;">Immediate action required</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-ban" style="font-size: 1.4rem; color: #ef4444;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High-Density Data Table -->
+            <div class="table-container" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <table class="data-table enterprise-table" id="currentStockReportTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">
+                            <th style="padding: 1rem;">Code</th>
+                            <th style="padding: 1rem;">Item Name</th>
+                            <th style="padding: 1rem;">Category</th>
+                            <th style="padding: 1rem;">UOM</th>
+                            <th style="padding: 1rem;">Stock Health Meter</th>
+                            <th style="padding: 1rem; text-align: right;">Shop Stock</th>
+                            <th style="padding: 1rem; text-align: right;">Asset Valuation</th>
+                            <th style="padding: 1rem; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currentStockTable" style="font-size: 0.875rem; color: #334155;">
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 3rem; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i><br>
+                                Loading stock telemetry...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="currentStockPaginationInfo" style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.85rem;">
+                <span id="currentStockResultCount">Showing 0 items</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Tab -->
+    <div id="lowStockTab" class="tab-content">
+        <div id="lowStockReportSection" class="report-section-card">
+            
+            <!-- Low Stock Filter Toolbar -->
+            <div class="report-toolbar" style="background: var(--surface-color, #ffffff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; align-items: center;">
+                    
+                    <!-- Search Input -->
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="lowStockSearchInput" placeholder="Search low stock items..." class="form-control" style="padding-left: 2.5rem; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; height: 42px;">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div>
+                        <select id="lowStockCategoryFilter" class="form-control" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; height: 42px;">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Toolbar -->
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end; grid-column: span 2 / span 2;">
+                        <button class="btn btn-sm btn-secondary" onclick="exportSectionToJPEG('lowStockReportSection', 'Low_Stock_Report')" title="Export visual summary as image" style="height: 42px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i class="fas fa-image"></i> JPEG
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="exportLowStockToExcel()" title="Export low stock report to Excel" style="height: 42px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards for Low Stock -->
+            <div id="lowStockSummary" class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                
+                <div class="kpi-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 1.5rem; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: 0.4rem;">Total Low Stock Items</div>
+                        <div style="font-size: 1.6rem; font-weight: 800;" id="lowStockCount">0</div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8); margin-top: 0.2rem;">Require replenishment</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1.4rem; color: #ffffff;"></i>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); padding: 1.5rem; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: 0.4rem;">Critical Out of Stock</div>
+                        <div style="font-size: 1.6rem; font-weight: 800;" id="outOfStockItemsCount">0</div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8); margin-top: 0.2rem;">Zero shop inventory</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-times-circle" style="font-size: 1.4rem; color: #ffffff;"></i>
+                    </div>
+                </div>
+
+                <div class="kpi-card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; margin-bottom: 0.4rem;">Near Reorder Threshold</div>
+                        <div style="font-size: 1.6rem; font-weight: 800; color: #0f172a;" id="criticalItemsCount">0</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">Stock <= Reorder point</div>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: rgba(132, 204, 22, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chart-line" style="font-size: 1.4rem; color: #166044;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Data Table -->
+            <div class="table-container" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <table class="data-table enterprise-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">
+                            <th style="padding: 1rem;">Code</th>
+                            <th style="padding: 1rem;">Item Name</th>
+                            <th style="padding: 1rem;">Category</th>
+                            <th style="padding: 1rem;">UOM</th>
+                            <th style="padding: 1rem;">Stock Health</th>
+                            <th style="padding: 1rem; text-align: right;">Reorder Level</th>
+                            <th style="padding: 1rem; text-align: right;">Current Stock</th>
+                            <th style="padding: 1rem; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lowStockTable" style="font-size: 0.875rem; color: #334155;">
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 3rem; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i><br>
+                                Loading low stock report...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="lowStockPaginationInfo" style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; color: #64748b; font-size: 0.85rem;">
+                <span id="lowStockResultCount">Showing 0 items</span>
+            </div>
+        </div>
+    </div>
+</div>

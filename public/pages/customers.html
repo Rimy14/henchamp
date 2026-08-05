@@ -1,0 +1,96 @@
+<!-- Page Actions -->
+<div class="page-actions">
+    <div class="search-box">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="form-control"
+                placeholder="Search customers by name, phone, or code...">
+        </div>
+    </div>
+    <button class="btn btn-primary" id="addCustomerBtn">
+        <i class="fas fa-plus"></i> Add Customer
+    </button>
+</div>
+
+<!-- Customers Table -->
+<div class="table-container">
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>City</th>
+                    <th>Credit Period</th>
+
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="customersTableBody">
+                <!-- Data will be populated here by customers.js -->
+            </tbody>
+        </table>
+    </div>
+    <div id="paginationContainer"></div>
+</div>
+
+<!-- Customer Modal -->
+<div class="modal" id="customerModal">
+    <div class="modal-content" style="max-width: 600px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-user-tag"></i>
+                </div>
+                <div>
+                    <h2 id="modalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Add Customer</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Manage client profiles and credit parameters</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" id="closeModalBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+        <form id="customerForm" style="display: flex; flex-direction: column; max-height: calc(85vh - 75px); margin: 0; overflow: hidden;">
+            <div class="modal-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                <input type="hidden" id="customerId">
+
+                <div class="form-group">
+                    <label for="customerName">Customer Name *</label>
+                    <input type="text" id="customerName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerPhone">Phone Number *</label>
+                    <input type="tel" id="customerPhone" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerEmail">Email (Optional)</label>
+                    <input type="email" id="customerEmail" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="customerCity">City (Optional)</label>
+                    <input type="text" id="customerCity" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="customerCreditPeriod">Credit Period (Days) *</label>
+                    <input type="number" id="customerCreditPeriod" class="form-control" min="0" step="1" value="30"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerAddress">Address (Optional)</label>
+                    <textarea id="customerAddress" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1.25rem 1.5rem; background: #ffffff; border-top: 1px solid var(--gray-200); flex-shrink: 0; display: flex; gap: 0.75rem; justify-content: flex-end; margin: 0;">
+                <button type="button" class="btn btn-secondary" id="cancelBtn" style="border-radius: 9px; padding: 0.6rem 1.25rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="border-radius: 9px; padding: 0.6rem 1.5rem; font-weight: 600;">Save Customer</button>
+            </div>
+        </form>
+
+    </div>
+</div>

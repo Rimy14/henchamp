@@ -1,0 +1,539 @@
+<!-- Date Range Filters -->
+<div class="report-filters">
+    <div class="filters-grid">
+        <div class="form-group">
+            <label>From Date</label>
+            <input type="date" id="startDate" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>To Date</label>
+            <input type="date" id="endDate" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Quick Select</label>
+            <select id="quickDate" class="form-control">
+                <option value="">Custom Range</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="this_month" selected>This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_year">This Year</option>
+            </select>
+        </div>
+    </div>
+    <div class="filter-actions">
+        <button id="generateReport" class="btn btn-primary">
+            <i class="fas fa-chart-bar"></i> Generate Report
+        </button>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="report-section" style="display: none;" id="summaryStatsSection">
+    <div class="section-header" style="margin-bottom: 1rem;">
+        <h3 class="section-title">Summary Statistics</h3>
+        <button class="btn btn-sm btn-secondary"
+            onclick="exportSectionToJPEG('summaryStatsSection', 'Summary_Statistics')">
+            <i class="fas fa-image"></i> Export as JPEG
+        </button>
+    </div>
+
+    <!-- Date Range Display -->
+    <div id="dateRangeDisplay" style="margin-bottom: 1.5rem; display: none;">
+        <span class="date-range-display">
+            Report Period: <span id="displayStartDate"></span> to <span id="displayEndDate"></span>
+        </span>
+    </div>
+
+    <div id="summaryStats" class="stats-grid">
+        <!-- Stats will be populated by JavaScript -->
+    </div>
+</div>
+
+<!-- Report Tabs -->
+<div id="reportContent" style="display: none;">
+    <div class="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="daily">Daily Sales</button>
+        <button class="tab" data-tab="products">Products</button>
+        <button class="tab" data-tab="payments">Payment Methods</button>
+        <button class="tab" data-tab="cashiers">Cashiers</button>
+        <!-- <button class="tab" data-tab="targets">Monthly Targets</button> -->
+        <button class="tab" data-tab="profit-loss">Profit & Loss</button>
+    </div>
+
+
+    <!-- Overview Tab -->
+    <div id="overviewTab" class="tab-content active">
+        <div class="report-section" id="topProductsSection">
+            <div class="section-header">
+                <h3 class="section-title">Top Selling Products</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-success" onclick="exportTopProductsToExcel()">
+                        <i class="fas fa-file-excel"></i> Export as Excel
+                    </button>
+                    <button class="btn btn-sm btn-secondary"
+                        onclick="exportSectionToJPEG('topProductsSection', 'Top_Products')">
+                        <i class="fas fa-image"></i> Export as JPEG
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topProductsTable">
+                        <tr>
+                            <td colspan="3" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-section" id="paymentBreakdownSection">
+            <div class="section-header">
+                <h3 class="section-title">Payment Methods Breakdown</h3>
+                <button class="btn btn-sm btn-secondary"
+                    onclick="exportSectionToJPEG('paymentBreakdownSection', 'Payment_Methods_Breakdown')">
+                    <i class="fas fa-image"></i> Export as JPEG
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Payment Method</th>
+                            <th>Transactions</th>
+                            <th>Total Amount</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentMethodsTable">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Sales Tab -->
+    <div id="dailyTab" class="tab-content">
+        <div class="report-section" id="dailySalesSection">
+            <div class="section-header">
+                <h3 class="section-title">Daily Sales Breakdown</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-success" onclick="exportDailySalesToExcel()">
+                        <i class="fas fa-file-excel"></i> Export as Excel
+                    </button>
+                    <button class="btn btn-sm btn-secondary"
+                        onclick="exportSectionToJPEG('dailySalesSection', 'Daily_Sales')">
+                        <i class="fas fa-image"></i> Export as JPEG
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Revenue</th>
+                            <th>Total Cost</th>
+                            <th>Discounts</th>
+                            <th>Tax</th>
+                            <th>Petty Cash</th>
+                            <th>Returns</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailySalesTable">
+                        <tr>
+                            <td colspan="7" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="productsTab" class="tab-content">
+        <div class="report-section" id="productSalesSection">
+            <div class="section-header">
+                <h3 class="section-title">Product-wise Sales</h3>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <select id="categoryFilter" class="form-control" style="width: auto;">
+                        <option value="">All Categories</option>
+                        <option value="Raw Materials">Raw Materials</option>
+                        <option value="Finished Goods">Finished Goods</option>
+                        <option value="Consumables">Consumables</option>
+                    </select>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-sm btn-success" onclick="exportProductSalesToExcel()">
+                            <i class="fas fa-file-excel"></i> Export as Excel
+                        </button>
+                        <button class="btn btn-sm btn-secondary"
+                            onclick="exportSectionToJPEG('productSalesSection', 'Product_Sales')">
+                            <i class="fas fa-image"></i> Export as JPEG
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                            <th>Total Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productSalesTable">
+                        <tr>
+                            <td colspan="6" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods Tab -->
+    <div id="paymentsTab" class="tab-content">
+        <div class="report-section" id="paymentDetailSection">
+            <div class="section-header">
+                <h3 class="section-title">Payment Methods Detail</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-success" onclick="exportPaymentMethodsDetailToExcel()">
+                        <i class="fas fa-file-excel"></i> Export as Excel
+                    </button>
+                    <button class="btn btn-sm btn-secondary"
+                        onclick="exportSectionToJPEG('paymentDetailSection', 'Payment_Methods_Detail')">
+                        <i class="fas fa-image"></i> Export as JPEG
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Payment Method</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentDetailTable">
+                        <tr>
+                            <td colspan="5" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cashiers Tab -->
+    <div id="cashiersTab" class="tab-content">
+        <div class="report-section" id="cashierPerformanceSection">
+            <div class="section-header">
+                <h3 class="section-title">Cashier Performance</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-success" onclick="exportCashierPerformanceToExcel()">
+                        <i class="fas fa-file-excel"></i> Export as Excel
+                    </button>
+                    <button class="btn btn-sm btn-secondary"
+                        onclick="exportSectionToJPEG('cashierPerformanceSection', 'Cashier_Performance')">
+                        <i class="fas fa-image"></i> Export as JPEG
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cashier</th>
+                            <th>Role</th>
+                            <th>Revenue</th>
+                            <th>Discounts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cashierTable">
+                        <tr>
+                            <td colspan="6" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Persons Tab - REMOVED -->
+
+    <!-- Monthly Targets Tab - HIDDEN -->
+    <div id="targetsTab" class="tab-content" style="display: none !important;">
+        <!-- Filters for Monthly Targets -->
+        <div class="report-section">
+            <div class="section-header">
+                <h3 class="section-title">Monthly Sales Targets</h3>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <select id="targetYear" class="form-control" style="width: auto;">
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                    <button id="setTargetsBtn" class="btn btn-primary">
+                        <i class="fas fa-bullseye"></i> Set Targets
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overall Summary Card -->
+            <div id="overallTargetSummary" style="margin-bottom: 2rem; display: none;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Designer Performance Table -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Overall Target</th>
+                            <th>Actual Sales</th>
+                            <th>Balance</th>
+                            <th>Achieved %</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyTargetsTable">
+                        <tr>
+                            <td colspan="7" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profit & Loss Tab -->
+    <div id="profit-lossTab" class="tab-content">
+        <div class="report-section">
+            <div class="section-header">
+                <h3 class="section-title">Profit & Loss Statement</h3>
+            </div>
+
+            <div id="profitLossStatsContainer">
+                <div class="section-header">
+                    <h4 class="section-title" style="font-size: 1rem; margin-bottom: 1rem;">Summary</h4>
+                    <button class="btn btn-sm btn-secondary"
+                        onclick="exportSectionToJPEG('profitLossStatsContainer', 'PL_Summary_Stats')">
+                        <i class="fas fa-image"></i> Export as JPEG
+                    </button>
+                </div>
+                <div id="profitLossStats" class="stats-grid" style="margin-bottom: 2rem;">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1" style="gap: 1.5rem;">
+                <div class="report-section" id="dailyProfitSection" style="margin-top: 0;">
+                    <div class="section-header">
+                        <h4 class="section-title" style="font-size: 1rem; margin-bottom: 1rem;">Daily Profit/Loss</h4>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-success" onclick="exportDailyProfitLossToExcel()">
+                                    <i class="fas fa-file-excel"></i> Export as Excel
+                                </button>
+                                <button class="btn btn-sm btn-secondary"
+                                    onclick="exportSectionToJPEG('dailyProfitSection', 'Daily_Profit')">
+                                    <i class="fas fa-image"></i> Export as JPEG
+                                </button>
+                            </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                     <th>Revenue</th>
+                                     <th>COGS</th>
+                                     <th>Petty Cash</th>
+                                     <th>Gross Profit</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="dailyProfitTable">
+                                 <tr>
+                                     <td colspan="5" class="text-center">Loading...</td>
+                                 </tr>
+                             </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="report-section" id="categoryProfitSection" style="margin-top: 0;">
+                    <div class="section-header">
+                        <h4 class="section-title" style="font-size: 1rem; margin-bottom: 1rem;">Profit by Category</h4>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-success" onclick="exportProfitByCategoryToExcel()">
+                                    <i class="fas fa-file-excel"></i> Export as Excel
+                                </button>
+                                <button class="btn btn-sm btn-secondary"
+                                    onclick="exportSectionToJPEG('categoryProfitSection', 'Category_Profit')">
+                                    <i class="fas fa-image"></i> Export as JPEG
+                                </button>
+                            </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Revenue</th>
+                                    <th>COGS</th>
+                                    <th>Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoryProfitTable">
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Person Profit Section - REMOVED -->
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state">
+        <i class="fas fa-chart-line"></i>
+        <h3>No Report Generated</h3>
+        <p>Select a date range and click "Generate Report" to view sales data</p>
+    </div><!-- Set Targets Modal -->
+    <div class="modal-overlay" id="setTargetsModal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-bullseye"></i> Set Monthly Sales Targets</h2>
+                <button class="modal-close" onclick="closeSetTargetsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Month Selection -->
+                <div class="form-group">
+                    <label for="targetMonth">Select Month <span style="color: var(--danger);">*</span></label>
+                    <input type="month" id="targetMonth" class="form-control" required>
+                </div>
+
+                <!-- Overall Target -->
+                <div class="form-group">
+                    <label for="overallTargetInput">Overall Company Target (Rs)
+                        <small style="color: var(--gray-500);">(optional when updating existing targets)</small>
+                    </label>
+                    <input type="number" id="overallTargetInput" class="form-control" placeholder="e.g., 1000000"
+                        min="0" step="0.01">
+                </div>
+
+                <hr style="margin: 1.5rem 0;">
+
+                <!-- Targets Tabs -->
+                <div class="tabs" style="margin-bottom: 1rem;">
+                    <!-- No tabs anymore as Sales Person target is removed. Consider adding others if needed or remove tabs UI if empty -->
+                    <div style="padding: 1rem; text-align: center; color: var(--gray-500);">
+                        No target categories available.
+                    </div>
+                </div>
+
+                <!-- Sales Persons Tab Content (Default visible) - REMOVED -->
+                <div id="salesPersonsTabContent" style="display: none;"></div>
+
+                <!-- Summary Section Removed -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSetTargetsModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveTargets()" id="saveTargetsBtn">
+                    <i class="fas fa-save"></i> Save Targets
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- P&L Breakdown Modal -->
+    <div class="modal-overlay" id="profitLossBreakdownModal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-line"></i> Profit & Loss Breakdown</h2>
+                <button class="modal-close" onclick="closeProfitLossBreakdownModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span class="label">Total Revenue:</span>
+                        <span class="value" id="breakdownTotalRevenue">KSh 0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total Tax Collected:</span>
+                        <span class="value" id="breakdownTotalTax">KSh 0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Revenue Net of Tax:</span>
+                        <span class="value" id="breakdownRevenueNetOfTax">KSh 0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total COGS:</span>
+                        <span class="value" id="breakdownTotalCogs">KSh 0.00</span>
+                    </div>
+                    <div class="summary-item total-item">
+                        <span class="label">Gross Profit:</span>
+                        <span class="value" id="breakdownGrossProfit">KSh 0.00</span>
+                    </div>
+                </div>
+
+                <div class="monthly-costs-section">
+                    <h3>Other Monthly Costs</h3>
+                    <div id="breakdownMonthlyCostsList">
+                        <!-- Individual monthly costs will be populated here by JavaScript -->
+                        <p>No monthly costs recorded for this period.</p>
+                    </div>
+                    <div class="summary-item total-item">
+                        <span class="label">Total Other Monthly Costs:</span>
+                        <span class="value" id="breakdownTotalMonthlyCosts">KSh 0.00</span>
+                    </div>
+                </div>
+
+                <div class="petty-cash-section" style="margin-top: 1.5rem; border-top: 1px solid var(--gray-200); padding-top: 1rem;">
+                    <h3>Petty Cash Expenses</h3>
+                    <div id="breakdownPettyCashList">
+                        <!-- Individual petty cash categories will be populated here by JavaScript -->
+                        <p>No petty cash expenses recorded for this period.</p>
+                    </div>
+                    <div class="summary-item total-item">
+                        <span class="label">Total Petty Cash Expenses:</span>
+                        <span class="value" id="breakdownTotalPettyCash">KSh 0.00</span>
+                    </div>
+                </div>
+
+                <div class="summary-section final-summary">
+                    <div class="summary-item total-item">
+                        <span class="label">Net Profit:</span>
+                        <span class="value" id="breakdownNetProfit">KSh 0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Profit Margin:</span>
+                        <span class="value" id="breakdownProfitMargin">0.00%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

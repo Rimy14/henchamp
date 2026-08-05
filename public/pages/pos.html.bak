@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pos - Digital POS</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/lazy-loading.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>POS</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="/pages/dashboard.html" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/pages/pos.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-cash-register"></i></span>
+                        <span>Point of Sale</span>
+                    </a>
+                    <a href="/pages/invoices.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-file-invoice"></i></span>
+                        <span>Invoices</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Inventory</div>
+                    <a href="/pages/items.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-box"></i></span>
+                        <span>Items/Products</span>
+                    </a>
+                    <a href="/pages/categories.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                        <span>Categories</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Purchase</div>
+                    <a href="/pages/purchase-orders.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-file-contract"></i></span>
+                        <span>Purchase Orders</span>
+                    </a>
+                    <a href="/pages/grn.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-truck-loading"></i></span>
+                        <span>Goods Received</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Production</div>
+                    <a href="/pages/bom.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-clipboard-list"></i></span>
+                        <span>Bill of Materials</span>
+                    </a>
+                    <a href="/pages/production.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-industry"></i></span>
+                        <span>Production</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Customers</div>
+                    <a href="/pages/customers.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-users"></i></span>
+                        <span>Customers</span>
+                    </a>
+                    <a href="/pages/suppliers.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-truck"></i></span>
+                        <span>Suppliers</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Reports</div>
+                    <a href="/pages/reports.html" class="nav-link">
+                        <span class="nav-icon">ðŸ“ˆ</span>
+                        <span>Sales Reports</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <a href="/pages/users.html" class="nav-link" id="usersLink">
+                        <span class="nav-icon">ðŸ‘¤</span>
+                        <span>Users</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role" id="userRole"></div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Metrics Cards -->
+                <div class="grid grid-cols-4 mb-6">
+                    <div class="card">
+                        <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Today's Sales</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary-600);" id="todaySales">$0
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Low Stock Items</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="lowStock">0</div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Pending POs</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--info);" id="pendingPOs">0</div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Active Users</h3>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="activeUsers">--</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Actions</h2>
+                    </div>
+                    <div class="grid grid-cols-4">
+                        <a href="/pages/pos.html" class="btn btn-primary">New Sale</a>
+                        <a href="/pages/purchase-orders.html" class="btn btn-secondary">New Purchase Order</a>
+                        <a href="/pages/items.html" class="btn btn-secondary">Add Item</a>
+                        <a href="/pages/reports.html" class="btn btn-secondary">View Reports</a>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Sales</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Cashier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentSalesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/js/loading-screen.js"></script>
+    <script type="module" src="/js/pos.js"></script>
+</body>
+
+</html>

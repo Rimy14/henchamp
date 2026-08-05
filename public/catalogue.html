@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue | HenChamp Solutions</title>
+    <link rel="icon" href="/img/logo-emerald.png" type="image/png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="/css/toast.css">
+    <link rel="stylesheet" href="/portal/css/portal.css">
+
+    <!-- Home-style override theme (UI only; all JS hooks/IDs preserved) -->
+    <style>
+    :root{--black:#111;--paper:#f4f2ea;--paper-2:#ece9dc;--emerald:#0e4a35;--emerald-2:#1c7a54;--lime:#a6ce3a;--muted:#8b8b8b;--line:#dcdccb;}
+    body.portal-page{font-family:'Inter',sans-serif !important;background:var(--paper) !important;color:var(--black) !important;}
+    body.portal-page *{font-family:'Inter',sans-serif !important;}
+
+    /* Header — match home */
+    .portal-navbar{background:rgba(244,242,234,.72) !important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(220,220,203,.6) !important;box-shadow:none !important;}
+    .portal-nav-container{max-width:1600px;padding:1.1rem 2.5rem;}
+    .portal-logo{height:50px !important;}
+    .portal-brand-title,.portal-brand-sub{display:none !important;}
+    .landing-nav-link{color:var(--black) !important;font-size:.82rem !important;font-weight:600 !important;text-transform:none !important;letter-spacing:.01em !important;}
+    .landing-nav-link.active{color:var(--emerald) !important;}
+    .landing-nav-link::after{background:var(--emerald) !important;}
+    .cart-trigger-btn{background:var(--emerald) !important;color:#fff !important;border-radius:40px !important;font-weight:700 !important;padding:.7rem 1.4rem !important;box-shadow:none !important;}
+    .cart-trigger-btn:hover{background:var(--emerald-2) !important;}
+    .cart-badge-count{background:var(--lime) !important;color:var(--emerald) !important;}
+
+    /* Catalogue hero — DIFFERENT from home: dark emerald editorial band */
+    .catalogue-header{background:var(--emerald) !important;color:var(--paper) !important;padding:9rem 2.5rem 3.5rem !important;position:relative;overflow:hidden;}
+    .catalogue-header::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(166,206,58,.16),transparent 55%);pointer-events:none;}
+    .catalogue-header-inner{max-width:1600px;margin:0 auto;position:relative;z-index:2;}
+    .catalogue-breadcrumb,.catalogue-breadcrumb a{color:rgba(244,242,234,.7) !important;}
+    .catalogue-breadcrumb a:hover{color:var(--lime) !important;}
+    .hero-eyebrow{color:var(--lime) !important;background:none !important;border:none !important;padding:0 !important;font-size:.72rem !important;letter-spacing:.18em !important;text-transform:uppercase;font-weight:700 !important;}
+    .catalogue-title{font-family:'Inter',sans-serif !important;font-size:clamp(2.8rem,7vw,5.5rem) !important;font-weight:800 !important;letter-spacing:-.03em !important;color:var(--paper) !important;line-height:.95 !important;}
+    .catalogue-title span{color:var(--lime) !important;font-style:normal !important;}
+    .catalogue-subtitle{color:rgba(244,242,234,.82) !important;font-size:1.05rem !important;max-width:600px;margin-top:1rem !important;}
+    .catalogue-search{margin-top:2rem !important;max-width:560px;}
+    .catalogue-search input{background:rgba(255,255,255,.1) !important;border:1px solid rgba(255,255,255,.2) !important;color:#fff !important;border-radius:40px !important;}
+    .catalogue-search input::placeholder{color:rgba(244,242,234,.6) !important;}
+    .catalogue-search i{color:var(--lime) !important;}
+
+    /* Filter bar */
+    .category-filter-wrapper{background:rgba(244,242,234,.94) !important;border-color:var(--line) !important;top:74px !important;}
+    .cat-dropdown-trigger{background:#fff !important;border:1px solid var(--line) !important;border-radius:40px !important;font-weight:600 !important;}
+    .cat-trigger-icon{background:var(--paper-2) !important;color:var(--emerald) !important;border-radius:50% !important;}
+    .cat-dropdown-option:hover,.cat-dropdown-option.active{background:var(--paper-2) !important;}
+    .cat-option-icon{color:var(--emerald) !important;}
+    .cat-results-count{background:var(--paper-2) !important;border-color:var(--line) !important;color:var(--muted) !important;}
+
+    /* Catalog container + cards — home aesthetic */
+    .catalog-container{background:var(--paper);max-width:1600px;padding:3rem 2.5rem 5rem;}
+    .catalog-grid{gap:1.5rem !important;}
+    .product-card{background:#fff !important;border:1px solid var(--line) !important;border-radius:8px !important;box-shadow:none !important;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s !important;overflow:hidden;}
+    .product-card:hover{transform:translateY(-6px) !important;box-shadow:0 20px 45px rgba(17,17,17,.08) !important;}
+    .card-image-box{background:var(--paper-2) !important;height:210px !important;}
+    .card-image-box i{color:var(--emerald) !important;opacity:.6;}
+    .card-category-badge{background:rgba(17,17,17,.82) !important;color:var(--lime) !important;}
+    .card-stock-badge{background:#fff !important;color:var(--emerald) !important;border-color:var(--line) !important;}
+    .card-item-title{color:var(--black) !important;font-weight:700 !important;}
+    .card-item-code{color:var(--emerald-2) !important;}
+    .card-price{color:var(--emerald) !important;font-weight:800 !important;}
+    .btn-add-cart{background:var(--emerald) !important;color:#fff !important;border-radius:40px !important;font-weight:700 !important;}
+    .btn-add-cart:hover{background:var(--emerald-2) !important;}
+
+    /* Cart drawer + checkout buttons */
+    .cart-drawer-header{background:var(--emerald) !important;}
+    .btn-checkout,.portal-btn-submit{background:var(--emerald) !important;color:#fff !important;border-radius:40px !important;}
+    .btn-checkout:hover,.portal-btn-submit:hover{background:var(--emerald-2) !important;}
+
+    /* Footer */
+    .portal-footer{background:var(--black) !important;}
+    .footer-col-title{color:var(--lime) !important;}
+    .footer-links a:hover,.footer-bottom-container a{color:var(--lime) !important;}
+    </style>
+</head>
+
+<body class="portal-page">
+
+    <!-- Navigation Header -->
+    <header class="portal-navbar">
+        <div class="portal-nav-container">
+            <a href="/store.html" class="portal-brand-group">
+                <img src="/img/logo-white.png" alt="HenChamp Solutions" class="portal-logo">
+                <div>
+                    <h1 class="portal-brand-title">HenChamp <span>Solutions</span></h1>
+                    <p class="portal-brand-sub">Supply Chain & Customer Portal</p>
+                </div>
+            </a>
+
+            <nav class="landing-nav-links">
+                <a href="/store.html" class="landing-nav-link">Home</a>
+                <a href="/catalogue.html" class="landing-nav-link active">Catalogue</a>
+                <a href="/store.html#why" class="landing-nav-link">Why HenChamp</a>
+                <a href="/store.html#contact" class="landing-nav-link">Contact</a>
+            </nav>
+
+            <div class="portal-nav-actions">
+                <button class="cart-trigger-btn" id="openCartBtn">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span id="cartCountBadge" class="cart-badge-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Compact Catalogue Header -->
+    <section class="catalogue-header">
+        <div class="catalogue-header-inner">
+            <nav class="catalogue-breadcrumb">
+                <a href="/store.html">Home</a>
+                <i class="fas fa-angle-right"></i>
+                <span>Catalogue</span>
+            </nav>
+            <p class="hero-eyebrow" style="margin-bottom: 1rem;">The Supply Collection</p>
+            <h1 class="catalogue-title">Everything your<br>operation <span>runs on.</span></h1>
+            <p class="catalogue-subtitle">Browse 500+ verified products across nine categories — filter, search, and order with instant ERP invoicing.</p>
+
+            <div class="portal-search-bar catalogue-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="storeSearchInput" placeholder="Search products, thermal rolls, packaging, ink...">
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter Bar -->
+    <div class="category-filter-wrapper">
+      <div class="category-filter-inner" id="categoryFilterBar">
+        <!-- Custom Category Dropdown -->
+        <div class="cat-dropdown-wrapper" id="catDropdownWrapper">
+            <button class="cat-dropdown-trigger" id="catDropdownTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="cat-trigger-icon"><i class="fas fa-layer-group"></i></span>
+                <span class="cat-trigger-label" id="catTriggerLabel">All Catalog Items</span>
+                <i class="fas fa-chevron-down cat-chevron" id="catChevron"></i>
+            </button>
+
+            <div class="cat-dropdown-menu" id="catDropdownMenu" role="listbox" aria-label="Filter by category">
+                <div class="cat-dropdown-option active" data-cat="all" role="option" aria-selected="true">
+                    <span class="cat-option-icon"><i class="fas fa-layer-group"></i></span>
+                    <span class="cat-option-text">All Catalog Items</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="PNS" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-print"></i></span>
+                    <span class="cat-option-text">Printing &amp; Stationery</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="OEQ" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-desktop"></i></span>
+                    <span class="cat-option-text">Office Equipment</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="UNI" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-tshirt"></i></span>
+                    <span class="cat-option-text">Staff Uniforms</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="BNE" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-tools"></i></span>
+                    <span class="cat-option-text">Building &amp; Engineering</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="LNM" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-microscope"></i></span>
+                    <span class="cat-option-text">Lab &amp; Medical</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="ICT" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-laptop-code"></i></span>
+                    <span class="cat-option-text">ICT Equipment</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="SEC" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-shield-alt"></i></span>
+                    <span class="cat-option-text">Security</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="INT" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-couch"></i></span>
+                    <span class="cat-option-text">Interior Design</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+                <div class="cat-dropdown-option" data-cat="PNT" role="option">
+                    <span class="cat-option-icon"><i class="fas fa-paint-roller"></i></span>
+                    <span class="cat-option-text">Painting</span>
+                    <i class="fas fa-check cat-option-check"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Results Count Label -->
+        <span class="cat-results-count" id="catResultsCount"></span>
+      </div>
+    </div>
+
+    <!-- Product Catalog Grid -->
+    <main class="catalog-container">
+        <div id="catalogGrid" class="catalog-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: #8B978E;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: #14503A;"></i>
+                <p style="margin-top: 1rem; font-weight: 600;">Loading HenChamp Solutions Catalogue...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Slide-Out Shopping Cart Drawer -->
+    <div id="cartDrawerOverlay" class="cart-drawer-overlay">
+        <div class="cart-drawer">
+            <div class="cart-drawer-header">
+                <h3 class="cart-drawer-title">
+                    <i class="fas fa-shopping-bag"></i> Your Shopping Cart
+                </h3>
+                <button id="closeCartBtn" class="cart-drawer-close">&times;</button>
+            </div>
+
+            <div id="cartDrawerBody" class="cart-drawer-body">
+                <div class="cart-empty-state">
+                    <div class="cart-empty-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <p>Your cart is empty</p>
+                    <small>Add items from the catalogue to get started</small>
+                </div>
+            </div>
+
+            <div class="cart-drawer-footer">
+                <div class="cart-total-row">
+                    <span>Grand Total (Inc. VAT):</span>
+                    <span id="cartGrandTotal">Rs 0.00</span>
+                </div>
+                <button id="checkoutProceedBtn" class="btn-checkout">
+                    <i class="fas fa-lock"></i> Secure Checkout <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content" style="max-width: 580px; border-radius: 20px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0C2019 0%, #14503A 100%); padding: 1.25rem 1.5rem; color: white;">
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: white;">
+                    <i class="fas fa-truck" style="color: #C8A96A; margin-right: 0.5rem;"></i> HenChamp Express Checkout
+                </h3>
+                <button id="closeCheckoutBtn" class="close-btn" style="color: white; background: rgba(255,255,255,0.15); border-radius: 50%; width: 32px; height: 32px; border: none; cursor: pointer;">&times;</button>
+            </div>
+
+            <form id="checkoutForm" style="display: flex; flex-direction: column; max-height: calc(85vh - 75px);">
+                <div class="modal-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                    <div style="background: #F0F5F0; border: 1px solid #D9C39A; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #14503A; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-check-circle" style="color: #1C7A54; font-size: 1.1rem;"></i>
+                        An official ERP Invoice will be automatically generated upon order submission.
+                    </div>
+
+                    <div class="portal-form-group">
+                        <label class="portal-label">Customer / Business Name *</label>
+                        <input type="text" id="custName" class="portal-input" required placeholder="e.g. Kenya Logistics Hub Ltd">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="portal-form-group" style="margin-bottom: 0;">
+                            <label class="portal-label">Phone / M-Pesa No. *</label>
+                            <input type="tel" id="custPhone" class="portal-input" required placeholder="+254 712 345678">
+                        </div>
+
+                        <div class="portal-form-group" style="margin-bottom: 0;">
+                            <label class="portal-label">Email Address</label>
+                            <input type="email" id="custEmail" class="portal-input" placeholder="orders@company.co.ke">
+                        </div>
+                    </div>
+
+                    <div class="portal-form-group">
+                        <label class="portal-label">Delivery Address / Dispatch Notes</label>
+                        <textarea id="custAddress" class="portal-input" rows="2" placeholder="e.g. Warehouse 4B, Industrial Area, Nairobi"></textarea>
+                    </div>
+
+                    <div class="portal-form-group" style="margin-bottom: 0;">
+                        <label class="portal-label">Payment Mode</label>
+                        <select id="paymentMethod" class="portal-select">
+                            <option value="mpesa">M-Pesa Express (STK Push)</option>
+                            <option value="credit">Customer Credit Account (Net 30)</option>
+                            <option value="card">Credit / Debit Card</option>
+                            <option value="cash">Cash on Delivery</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="padding: 1.25rem 1.5rem; background: #F7F4EC; border-top: 1px solid #E4DDCB; display: flex; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0;">
+                    <button type="button" id="cancelCheckoutBtn" class="portal-btn-cancel">Cancel</button>
+                    <button type="submit" id="submitOrderBtn" class="portal-btn-submit">
+                        <i class="fas fa-file-invoice"></i> Complete Order & Generate Invoice
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generated Invoice Success Modal -->
+    <div id="invoiceSuccessModal" class="modal">
+        <div class="modal-content" style="max-width: 650px; border-radius: 20px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0C2019 0%, #14503A 100%); padding: 1.25rem 1.5rem; color: white;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <img src="/img/logo-white.png" alt="Logo" style="height: 38px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.15rem; color: white; font-weight: 700;">Order Confirmed & Invoice Generated</h3>
+                        <p style="margin: 0; font-size: 0.75rem; color: #9BA99F;">HenChamp Solutions ERP System</p>
+                    </div>
+                </div>
+                <button id="closeInvoiceSuccessBtn" class="close-btn" style="color: white;">&times;</button>
+            </div>
+
+            <div class="modal-body" style="padding: 2rem; text-align: center;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: #E7EFE9; color: #1C7A54; display: flex; align-items: center; justify-content: center; font-size: 2.25rem; margin: 0 auto 1.25rem auto;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 800; color: #1A2620;">Thank You for Your Order!</h2>
+                <p style="color: #5A6A60; margin-bottom: 1.5rem; font-size: 0.95rem;">Your order has been recorded in the HenChamp ERP and stock has been allocated from active inventory batches.</p>
+
+                <div style="background: #F7F4EC; border: 1px solid #E4DDCB; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #14503A; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                        <span>Invoice Number:</span>
+                        <span id="succInvoiceNo">INV-2026-0001</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #5A6A60; font-size: 0.9rem; margin-bottom: 0.35rem;">
+                        <span>Customer:</span>
+                        <span id="succCustName">John Doe</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #5A6A60; font-size: 0.9rem;">
+                        <span>Total Paid (VAT Incl.):</span>
+                        <span id="succTotalAmt" style="font-weight: 700; color: #1A2620;">Rs 0.00</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button id="continueShoppingBtn" class="portal-btn-cancel" style="border-radius: 9px; padding: 0.75rem 1.25rem; font-weight: 600;">
+                        <i class="fas fa-shopping-bag" style="margin-right: 0.4rem;"></i> Continue Shopping
+                    </button>
+                    <button id="printInvoiceBtn" class="portal-btn-submit" style="border-radius: 9px; padding: 0.75rem 1.5rem; font-weight: 700;">
+                        <i class="fas fa-print"></i> Print / Download Invoice
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rich HenChamp Brand Footer -->
+    <footer class="portal-footer">
+        <div class="portal-footer-top">
+            <div class="footer-brand-col">
+                <img src="/img/logo-white.png" alt="HenChamp Solutions" class="footer-logo">
+                <p class="footer-brand-desc">
+                    HenChamp Solutions is East Africa's leading provider of industrial packaging materials, thermal POS paper, barcode consumables, and warehouse logistics solutions.
+                </p>
+                <div class="payment-badges">
+                    <span class="pay-badge"><i class="fas fa-mobile-alt"></i> M-Pesa Express</span>
+                    <span class="pay-badge"><i class="fas fa-credit-card"></i> Visa / Mastercard</span>
+                    <span class="pay-badge"><i class="fas fa-file-contract"></i> Net 30 Credit</span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-col-title">Product Catalogue</h4>
+                <ul class="footer-links">
+                    <li><a href="/catalogue.html?cat=PNS"><i class="fas fa-angle-right"></i> Printing &amp; Stationery</a></li>
+                    <li><a href="/catalogue.html?cat=OEQ"><i class="fas fa-angle-right"></i> Office Equipment</a></li>
+                    <li><a href="/catalogue.html?cat=ICT"><i class="fas fa-angle-right"></i> ICT Equipment</a></li>
+                    <li><a href="/catalogue.html?cat=BNE"><i class="fas fa-angle-right"></i> Building &amp; Engineering</a></li>
+                    <li><a href="/catalogue.html"><i class="fas fa-angle-right"></i> View Full Catalogue</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-title">Customer Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/store.html"><i class="fas fa-angle-right"></i> Home</a></li>
+                    <li><a href="/catalogue.html"><i class="fas fa-angle-right"></i> Catalogue</a></li>
+                    <li><a href="/app.html"><i class="fas fa-angle-right"></i> Admin ERP Dashboard</a></li>
+                    <li><a href="https://solutions.henchamp.com/" target="_blank"><i class="fas fa-external-link-alt"></i> HenChamp Official Site</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-title">Nairobi Head Office</h4>
+                <ul class="footer-contact-list">
+                    <li class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Industrial Area, Enterprise Road, Nairobi, Kenya</span>
+                    </li>
+                    <li class="footer-contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+254 700 123 456 / +254 722 987 654</span>
+                    </li>
+                    <li class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>sales@solutions.henchamp.com</span>
+                    </li>
+                    <li class="footer-contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Mon - Sat: 8:00 AM - 6:00 PM</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="portal-footer-bottom">
+            <div class="footer-bottom-container">
+                <div>&copy; 2026 <strong>HenChamp Solutions</strong>. All Rights Reserved.</div>
+                <div>Powered by <a href="https://solutions.henchamp.com/" target="_blank">HenChamp ERP & POS Engine</a></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/toast.js"></script>
+    <script type="module" src="/portal/js/portal.js"></script>
+
+    <!-- Preselect category from ?cat= URL param (UI only — reuses existing dropdown logic) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const cat = params.get('cat');
+            if (!cat) return;
+            const menu = document.getElementById('catDropdownMenu');
+            if (!menu) return;
+            const opt = menu.querySelector(`.cat-dropdown-option[data-cat="${cat}"]`);
+            // Small delay so portal.js has bound its listeners and loaded the catalog first.
+            setTimeout(() => { if (opt) opt.click(); }, 350);
+        });
+    </script>
+</body>
+
+</html>

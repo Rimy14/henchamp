@@ -1,0 +1,71 @@
+<!-- Page Actions -->
+<div class="page-actions">
+    <div class="search-bar"
+        style="flex: 1; max-width: 400px; background: white; padding: 0.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+        <input type="text" id="searchInput" placeholder="Search batches by item name, batch number, or GRN..."
+            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: var(--text-base);">
+    </div>
+
+    <div class="filter-group">
+        <div id="itemFilterContainer" style="width: 250px;"></div>
+    </div>
+
+    <button id="refreshBtn" class="btn btn-secondary">
+        <i class="fas fa-sync"></i> Refresh
+    </button>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Batch #</th>
+                <th>Item Name</th>
+                <th>GRN #</th>
+                <th>Received Date</th>
+                <th>Unit Cost</th>
+                <th>Initial Qty</th>
+                <th>Current Qty</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="batchTableBody">
+            <!-- Data will be populated here by inventory-batches.js -->
+        </tbody>
+    </table>
+    <div id="paginationContainer"></div>
+</div>
+
+<!-- Batch Details Modal -->
+<div id="batchModal" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Batch Details</h2>
+            <button type="button" id="closeModalBtn" class="close-btn"
+                style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <div id="batchDetailsContent">
+            <!-- Details injected here -->
+        </div>
+
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Consumption History</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Consumed Qty</th>
+                    <th>Consumed By</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody id="consumptionTableBody">
+                <tr>
+                    <td colspan="5" style="text-align: center;">No usage history</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

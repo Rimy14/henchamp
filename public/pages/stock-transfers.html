@@ -1,0 +1,185 @@
+<div class="page-header">
+    <h1>Stock Transfers</h1>
+    <button id="newTransferBtn" class="btn btn-primary">
+        <i class="fas fa-exchange-alt"></i> New Transfer
+    </button>
+</div>
+
+<!-- Transfers List -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Transfer #</th>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th>Initiated By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="transfersTableBody">
+            <tr>
+                <td colspan="8" class="text-center">Loading transfers...</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Pagination -->
+    <div id="paginationContainer"></div>
+</div>
+
+
+<!-- New Transfer Modal -->
+<div id="transferModal" class="modal">
+    <div class="modal-content" style="max-width: 800px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-right-left"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">New Stock Transfer</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Move inventory items between store locations or warehouses</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.hideTransferModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="transferForm" style="padding: 1.5rem; margin: 0;">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>From Location</label>
+                    <select id="fromLocation" class="form-control" required>
+                        <option value="">Select location...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>To Location</label>
+                    <select id="toLocation" class="form-control" required>
+                        <option value="">Select location...</option>
+                    </select>
+                </div>
+                <div class="form-group form-grid-full">
+                    <label>Transfer Date</label>
+                    <input type="date" id="transferDate" class="form-control" required>
+                </div>
+                <div class="form-group form-grid-full">
+                    <label>Notes</label>
+                    <textarea id="transferNotes" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="items-section" style="margin-top: 2rem;">
+                <h3>Items to Transfer</h3>
+
+                <div class="item-input-row" style="grid-template-columns: 3fr 1fr 1fr 1fr auto;">
+                    <div class="form-group" style="margin: 0;">
+                        <select id="itemSelect" class="form-control">
+                            <option value="">Select item...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <input type="text" id="currentStockDisplay" class="form-control" placeholder="Stock" readonly
+                            style="background: #f5f5f5;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <input type="number" id="transferQty" class="form-control" placeholder="Qty" min="1">
+                    </div>
+                    <button type="button" id="addItemBtn" class="btn btn-secondary">Add</button>
+                </div>
+
+                <table class="data-table" style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transferItemsBody">
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">No items added</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer" style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--gray-200);">
+                <button type="button" class="btn btn-secondary" onclick="window.hideTransferModal()" style="border-radius: 9px; padding: 0.6rem 1.25rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="border-radius: 9px; padding: 0.6rem 1.5rem; font-weight: 600;">Complete Transfer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Transfer Details Modal -->
+<div id="viewDetailsModal" class="modal">
+    <div class="modal-content" style="max-width: 700px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div>
+                    <h2 id="detailsModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Transfer Details</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">View transfer manifest and item breakdown</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="document.getElementById('viewDetailsModal').style.display = 'none'" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-grid" style="margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label style="font-weight: 600; color: var(--gray-700);">Transfer Number</label>
+                    <p id="detailTransferNumber" style="margin: 0.5rem 0 0 0; font-size: 1rem; color: var(--gray-900);">
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; color: var(--gray-700);">Date</label>
+                    <p id="detailDate" style="margin: 0.5rem 0 0 0; font-size: 1rem; color: var(--gray-900);"></p>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; color: var(--gray-700);">From Location</label>
+                    <p id="detailFromLocation" style="margin: 0.5rem 0 0 0; font-size: 1rem; color: var(--gray-900);">
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; color: var(--gray-700);">To Location</label>
+                    <p id="detailToLocation" style="margin: 0.5rem 0 0 0; font-size: 1rem; color: var(--gray-900);"></p>
+                </div>
+                <div class="form-group form-grid-full">
+                    <label style="font-weight: 600; color: var(--gray-700);">Status</label>
+                    <p id="detailStatus" style="margin: 0.5rem 0 0 0;"></p>
+                </div>
+                <div class="form-group form-grid-full" id="detailNotesGroup">
+                    <label style="font-weight: 600; color: var(--gray-700);">Notes</label>
+                    <p id="detailNotes" style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: var(--gray-800);"></p>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--gray-900);">Transferred Items</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody id="detailItemsBody">
+                    <tr>
+                        <td colspan="3" class="text-center">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary"
+                onclick="document.getElementById('viewDetailsModal').style.display = 'none'">Close</button>
+        </div>
+    </div>
+</div>

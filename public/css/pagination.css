@@ -1,0 +1,188 @@
+/* =====================================================
+   PAGINATION STYLES — Modern Pill Design
+   ===================================================== */
+
+#paginationContainer,
+#salesPaginationContainer,
+#usersPaginationContainer {
+    /* Ensure the container is always visible even when empty */
+    min-height: 60px;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.25rem;
+    background: white;
+    border-top: 2px solid var(--primary-100);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(14, 74, 53, 0.08);
+}
+
+/* Info text — "Showing X to Y of Z entries" */
+.pagination-info {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    font-weight: 500;
+    background: var(--primary-50);
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    border: 1px solid var(--primary-100);
+    white-space: nowrap;
+}
+
+/* Controls wrapper */
+.pagination-controls {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ---- Base button ---- */
+.pagination-btn {
+    padding: 0 0.75rem;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    color: var(--gray-700);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border-radius: 999px;          /* pill shape */
+    cursor: pointer;
+    transition:
+        background var(--transition-base),
+        border-color var(--transition-base),
+        color var(--transition-base),
+        transform var(--transition-fast),
+        box-shadow var(--transition-base);
+    min-width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    font-family: var(--font-sans);
+}
+
+/* Hover state */
+.pagination-btn:hover:not(:disabled):not(.active) {
+    background: var(--primary-50);
+    border-color: var(--primary-300);
+    color: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(14, 74, 53, 0.15);
+}
+
+/* Active / current page */
+.pagination-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(14, 74, 53, 0.35);
+    transform: translateY(-1px);
+    cursor: default;
+}
+
+/* Disabled (first / prev at page 1, etc.) */
+.pagination-btn:disabled,
+.pagination-btn.disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    background: var(--gray-50);
+    border-color: var(--gray-200);
+    color: var(--gray-400);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Click press feedback */
+.pagination-btn:active:not(:disabled):not(.active) {
+    transform: scale(0.94) translateY(0px);
+    box-shadow: none;
+}
+
+/* Ellipsis dots */
+.pagination-ellipsis {
+    padding: 0 0.25rem;
+    color: var(--gray-400);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    letter-spacing: 0.05em;
+}
+
+/* =====================================================
+   Items-per-page selector (optional UI element)
+   ===================================================== */
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.items-per-page select {
+    padding: 0.375rem 2.25rem 0.375rem 0.875rem;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 999px;
+    background: white;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234f46e5' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.items-per-page select:hover {
+    border-color: var(--primary-300);
+}
+
+.items-per-page select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(14, 74, 53, 0.15);
+}
+
+/* =====================================================
+   Responsive
+   ===================================================== */
+@media (max-width: 640px) {
+    .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.75rem 1rem;
+    }
+
+    .pagination-info {
+        text-align: center;
+        order: 2;
+    }
+
+    .pagination-controls {
+        justify-content: center;
+        order: 1;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        min-width: 34px;
+        height: 34px;
+        font-size: var(--text-xs);
+        padding: 0 0.5rem;
+    }
+}

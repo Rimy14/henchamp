@@ -1,0 +1,242 @@
+<style>
+    .tab-navigation {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .tab-button {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--gray-600);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: -2px;
+    }
+
+    .tab-button:hover {
+        color: var(--primary-600);
+    }
+
+    .tab-button.active {
+        color: var(--primary-600);
+        border-bottom-color: var(--primary-600);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h2 style="margin: 0; font-size: var(--text-xl); font-weight: 600;">User Management</h2>
+        <p style="margin: 0.25rem 0 0 0; color: var(--gray-600); font-size: var(--text-sm);">
+            Manage system users, machine operators, and sales persons
+        </p>
+    </div>
+    <button id="addBtn" class="btn btn-primary">
+        <i class="fas fa-plus"></i> <span id="addBtnText">Add User</span>
+    </button>
+</div>
+
+
+<!-- Void Password Settings Card -->
+<div class="card"
+    style="margin-bottom: 1.5rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h3
+                style="margin: 0; font-size: 1.25rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 0.75rem;">
+                <div
+                    style="background: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 8px; display: inline-flex;">
+                    <i class="fas fa-shield-alt" style="color: white; font-size: 1.25rem;"></i>
+                </div>
+                Void Password Settings
+            </h3>
+            <p style="margin: 0.5rem 0 0 0; color: rgba(255,255,255,0.9); font-size: 0.875rem;">
+                Secure password required for voiding transactions
+            </p>
+        </div>
+        <button id="editVoidPasswordBtn" class="btn btn-sm"
+            style="background: white; color: #667eea; font-weight: 600; padding: 0.5rem 1.25rem; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: all 0.3s ease;">
+            <i class="fas fa-edit"></i> Change Password
+        </button>
+    </div>
+    <div
+        style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.25rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <label style="font-weight: 600; color: white; font-size: 0.95rem; min-width: 140px;">Current
+                Password:</label>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1;">
+                <div style="position: relative; flex: 1; max-width: 280px;">
+                    <input type="password" id="currentVoidPassword" readonly class="form-control"
+                        style="background: white; border: 2px solid rgba(255,255,255,0.3); padding: 0.75rem 3rem 0.75rem 1rem; font-size: 1rem; font-weight: 600; letter-spacing: 2px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                        value="••••••••">
+                    <button id="toggleVoidPasswordBtn" class="btn btn-sm" type="button"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #667eea; padding: 0.5rem; transition: all 0.2s ease;">
+                        <i class="fas fa-eye" style="font-size: 1.1rem;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #editVoidPasswordBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    #toggleVoidPasswordBtn:hover {
+        color: #764ba2 !important;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    #currentVoidPassword:focus {
+        outline: none;
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+    }
+</style>
+
+<!-- Users Tab Content -->
+<div id="usersTab" class="tab-content active">
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                        Loading users...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="usersPaginationContainer"></div>
+    </div>
+</div>
+
+
+
+
+
+<!-- User Modal -->
+<div id="userModal" class="modal">
+    <div class="modal-content" style="max-width: 600px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div>
+                    <h2 id="userModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Add User</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Manage system user accounts and credentials</p>
+                </div>
+            </div>
+            <button type="button" id="closeUserModalBtn" class="close-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="userForm" style="display: flex; flex-direction: column; max-height: calc(85vh - 75px); margin: 0; overflow: hidden;">
+            <input type="hidden" id="userId">
+
+            <div class="modal-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                <div class="form-grid">
+                    <div class="form-group form-grid-full">
+                        <label>Username *</label>
+                        <input type="text" id="username" class="form-control" required minlength="3">
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-control">
+                    </div>
+
+                    <div class="form-group" id="passwordGroup">
+                        <label id="passwordLabel">Password *</label>
+                        <input type="password" id="password" class="form-control" minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role *</label>
+                        <select id="role" class="form-control" required>
+                            <option value="">Select role...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="userStatus" class="form-control" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 1.25rem 1.5rem; border-top: 1px solid var(--gray-200); background: #ffffff; flex-shrink: 0; display: flex; gap: 0.75rem; justify-content: flex-end; margin: 0;">
+                <button type="button" id="cancelUserBtn" class="btn btn-secondary" style="border-radius: 9px; padding: 0.6rem 1.25rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="border-radius: 9px; padding: 0.6rem 1.5rem; font-weight: 600;">Save User</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Void Password Modal -->
+<div id="voidPasswordModal" class="modal">
+    <div class="modal-content" style="max-width: 500px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Change Void Password</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Set authorization password for invoice voids</p>
+                </div>
+            </div>
+            <button type="button" id="closeVoidPasswordModalBtn" class="close-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="voidPasswordForm" style="padding: 1.5rem; margin: 0;">
+            <div class="form-group">
+                <label>New Void Password *</label>
+                <input type="password" id="newVoidPassword" class="form-control" required minlength="4"
+                    placeholder="Enter new password">
+                <small style="color: var(--gray-600); font-size: 0.875rem;">Minimum 4 characters</small>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Confirm Password *</label>
+                <input type="password" id="confirmVoidPassword" class="form-control" required minlength="4"
+                    placeholder="Confirm new password">
+            </div>
+
+            <div class="modal-footer" style="padding-top: 1.25rem; margin-top: 1rem; border-top: 1px solid var(--gray-200);">
+                <button type="button" id="cancelVoidPasswordBtn" class="btn btn-secondary" style="border-radius: 9px; padding: 0.6rem 1.25rem; font-weight: 600;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="border-radius: 9px; padding: 0.6rem 1.5rem; font-weight: 600;">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>

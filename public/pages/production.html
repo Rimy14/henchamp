@@ -1,0 +1,62 @@
+<div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
+    <button id="createProductionBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Record
+        Production</button>
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Finished Good</th>
+                <th>Quantity</th>
+                <th>Production Date</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="productionTableBody">
+            <tr>
+                <td colspan="6" style="text-align:center;padding:2rem">Loading...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="productionModal" class="modal">
+    <div class="modal-content">
+        <h2>Record Production</h2>
+        <form id="productionForm">
+            <div class="form-group"><label>BOM (Finished Good) *</label><select id="productionBOM" class="form-control"
+                    required>
+                    <option value="">Select BOM...</option>
+                </select></div>
+            <div class="form-group"><label>Quantity to Produce *</label><input type="number" id="productionQuantity"
+                    class="form-control" min="1" value="1" required></div>
+            <div class="form-group"><label>Production Date *</label><input type="date" id="productionDate"
+                    class="form-control" required></div>
+            <div class="form-group"><label>Notes</label><textarea id="productionNotes" class="form-control"
+                    rows="2"></textarea></div>
+            <div id="materialRequirementsSection" style="display:none;">
+                <h3 style="margin-bottom:1rem">Material Requirements</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Required</th>
+                            <th>Available</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requirementsTableBody"></tbody>
+                </table>
+            </div>
+            <div id="productionWarning" style="display:none;">
+                <strong>⚠️ Warning:</strong> Insufficient materials for production
+            </div>
+            <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem">
+                <button type="button" id="cancelProductionBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="submitProductionBtn" class="btn btn-primary">Record Production</button>
+            </div>
+        </form>
+    </div>
+</div>

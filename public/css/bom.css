@@ -1,0 +1,40 @@
+/* Styles for BOM page */
+
+.page-header-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.items-section {
+    background: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    margin: 1rem 0;
+}
+
+.items-section h3 {
+    margin-bottom: 1rem;
+}
+
+.item-input-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+.components-table {
+    margin-top: 1rem;
+}
+
+.view-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.view-modal-section-title {
+    margin-top: 1.5rem;
+}

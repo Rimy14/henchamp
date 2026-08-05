@@ -1,0 +1,475 @@
+<!-- Batch Adjustment Modal -->
+<div id="batchAdjustmentModal" class="modal">
+    <div class="modal-content" style="max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Batch-Wise Stock Adjustment</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Adjust batch inventory for damage, loss, or stock corrections</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.closeBatchAdjustmentModal && window.closeBatchAdjustmentModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; flex: 1; overflow-y: auto;">
+            <!-- Item Info Card -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center;">
+                    <div style="width: 50px; height: 50px; background: rgba(14, 74, 53, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-cube" style="color: #0e4a35; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.2rem; text-transform: uppercase; font-weight: 600;">Selected Item</div>
+                        <div id="adjustmentItemName" style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.15rem;">-</div>
+                        <div id="adjustmentItemCode" style="font-size: 0.85rem; color: #64748b; font-family: monospace;">-</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.75rem 1rem; background: white; border-radius: 8px; border: 1px solid #cbd5e1; min-width: 140px;">
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.35rem; font-weight: 600;">Location</div>
+                        <select id="adjustmentLocation" class="form-control" style="font-weight: 600; text-align: center; border: 1px solid #cbd5e1; font-size: 0.85rem; padding: 0.35rem 0.5rem;">
+                            <option value="">Select...</option>
+                            <option value="SHOP">SHOP</option>
+                            <option value="STORE">STORE</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batches Section -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 36px; height: 36px; background: rgba(14, 74, 53, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-layer-group" style="color: #0e4a35; font-size: 1rem;"></i>
+                        </div>
+                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Available Batches</h3>
+                    </div>
+                    <div id="batchLoadingIndicator" style="display: none; color: #0e4a35; font-size: 0.85rem;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading batches...
+                    </div>
+                </div>
+
+                <div id="batchesTable" style="overflow-x: auto;">
+                    <p style="text-align: center; padding: 1.5rem; color: #64748b; font-size: 0.875rem;">
+                        <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                        Select a location to view batches
+                    </p>
+                </div>
+            </div>
+
+            <!-- Adjustment Details Card -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div style="width: 36px; height: 36px; background: rgba(14, 74, 53, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-edit" style="color: #0e4a35; font-size: 1rem;"></i>
+                    </div>
+                    <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Adjustment Details</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155; font-size: 0.85rem;">
+                            <i class="fas fa-exchange-alt" style="color: #0e4a35; margin-right: 0.35rem;"></i>
+                            Adjustment Type *
+                        </label>
+                        <select id="adjustmentType" class="form-control" required style="font-weight: 600; font-size: 0.9rem;">
+                            <option value="">Select type...</option>
+                            <option value="damage">Damage/Loss</option>
+                            <option value="found">Found/Gain</option>
+                            <option value="correction">Correction</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                        style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 0.875rem;">
+                        <i class="fas fa-comment-alt" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        Reason for Adjustment *
+                    </label>
+                    <!-- Overall Reason -->
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label for="adj_reason">Overall Reason *</label>
+                        <textarea id="adj_reason" rows="3" required
+                            placeholder="e.g., Water damage during storage, Physical count discrepancy, etc."></textarea>
+                    </div>
+
+                    <!-- Summary -->
+                    <div id="adjustmentSummary"
+                        style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md); display: none;">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Adjustment Summary</h4>
+                        <div id="summaryContent"></div>
+                    </div>
+                </div>
+
+        <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+            <button type="button" class="btn" onclick="closeBatchAdjustmentModal()" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0e4a35 0%, #166044 100%); border: none; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px;">Submit Adjustment</button>
+        </div>
+                </form>
+            </div>
+        </div>
+
+        <style>
+            .batch-item {
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-md);
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+                background: white;
+                transition: all 0.2s;
+            }
+
+            .batch-item:hover {
+                border-color: var(--primary-400);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .batch-item.selected {
+                border-color: var(--primary-500);
+                background: var(--primary-50);
+            }
+
+            .batch-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .batch-details {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                font-size: 0.875rem;
+                color: var(--gray-600);
+                margin-bottom: 0.5rem;
+            }
+
+            .batch-adjustment-input {
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--gray-200);
+            }
+
+            .batch-adjustment-input input {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-md);
+                font-size: 0.9rem;
+            }
+
+            .radio-label {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                cursor: pointer;
+                padding: 0.5rem 1rem;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-md);
+                transition: all 0.2s;
+            }
+
+            .radio-label:hover {
+                border-color: var(--primary-400);
+                background: var(--primary-50);
+            }
+
+            .radio-label input[type="radio"]:checked+span {
+                font-weight: 600;
+                color: var(--primary-700);
+            }
+        </style>
+
+        <script>
+            let selectedBatches = [];
+            let availableBatches = [];
+
+            function openBatchAdjustmentModal() {
+                document.getElementById('batchAdjustmentModal').style.display = 'flex';
+                loadItemsForAdjustment();
+                loadLocationsForAdjustment();
+                resetBatchAdjustmentForm();
+            }
+
+            function closeBatchAdjustmentModal() {
+                document.getElementById('batchAdjustmentModal').style.display = 'none';
+                resetBatchAdjustmentForm();
+            }
+
+            function resetBatchAdjustmentForm() {
+                document.getElementById('batchAdjustmentForm').reset();
+                selectedBatches = [];
+                availableBatches = [];
+                document.getElementById('batchesList').innerHTML = '<p style="text-align: center; color: var(--gray-500);">Select an item to view batches</p>';
+                document.getElementById('adjustmentSummary').style.display = 'none';
+            }
+
+            async function loadItemsForAdjustment() {
+                try {
+                    const response = await fetch('/api/items');
+                    const data = await response.json();
+
+                    const select = document.getElementById('adj_item_id');
+                    select.innerHTML = '<option value="">Select Item...</option>';
+
+                    data.data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.code} - ${item.name}`;
+                        select.appendChild(option);
+                    });
+                } catch (error) {
+                    showToast('Error loading items', 'error');
+                }
+            }
+
+            async function loadLocationsForAdjustment() {
+                try {
+                    const response = await fetch('/api/stock-transfers/locations');
+                    const data = await response.json();
+
+                    const select = document.getElementById('adj_location_id');
+                    select.innerHTML = '<option value="">Select Location...</option>';
+
+                    data.data.forEach(loc => {
+                        const option = document.createElement('option');
+                        option.value = loc.id;
+                        option.textContent = loc.name;
+                        select.appendChild(option);
+                    });
+                } catch (error) {
+                    showToast('Error loading locations', 'error');
+                }
+            }
+
+            async function loadBatchesForItem() {
+                const itemId = document.getElementById('adj_item_id').value;
+                const locationId = document.getElementById('adj_location_id').value;
+
+                if (!itemId || !locationId) {
+                    document.getElementById('batchesList').innerHTML = '<p style="text-align: center; color: var(--gray-500);">Select item and location</p>';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/stock-adjustments/batches?item_id=${itemId}&location_id=${locationId}`);
+                    const data = await response.json();
+
+                    availableBatches = data.data;
+                    renderBatches();
+                } catch (error) {
+                    showToast('Error loading batches', 'error');
+                }
+            }
+
+            function renderBatches() {
+                const container = document.getElementById('batchesList');
+
+                if (availableBatches.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--gray-500);">No batches available</p>';
+                    return;
+                }
+
+                const isFIFO = document.getElementById('auto_select_fifo')?.checked;
+
+                container.innerHTML = availableBatches.map(batch => `
+        <div class="batch-item" id="batch_${batch.id}">
+            <div class="batch-header">
+                <div>
+                    <strong>Batch #${batch.id}</strong>
+                    ${batch.grn_number ? `<span style="color: var(--gray-600); margin-left: 0.5rem;">GRN: ${batch.grn_number}</span>` : ''}
+                </div>
+                <input type="checkbox" 
+                       class="batch-select" 
+                       data-batch-id="${batch.id}"
+                       onchange="toggleBatchItem(${batch.id})"
+                       ${isFIFO ? 'disabled' : ''}>
+            </div>
+            <div class="batch-details">
+                <div><strong>Date:</strong> ${new Date(batch.received_date).toLocaleDateString()}</div>
+                <div><strong>Available:</strong> ${batch.current_quantity} units</div>
+                <div><strong>Cost:</strong> KSh ${parseFloat(batch.cost_per_unit || 0).toFixed(2)}</div>
+            </div>
+            <div class="batch-adjustment-input" style="display: none;" data-batch-id="${batch.id}">
+                <label style="font-size: 0.875rem; margin-bottom: 0.25rem; display: block;">
+                    Quantity to Adjust (Max: ${batch.current_quantity})
+                </label>
+                <input type="number" 
+                       class="batch-qty-input"
+                       data-batch-id="${batch.id}"
+                       step="0.01" 
+                       max="${batch.current_quantity}"
+                       placeholder="Enter quantity"
+                       oninput="updateAdjustmentSummary()">
+                <input type="text"
+                       class="batch-reason-input"
+                       data-batch-id="${batch.id}"
+                       placeholder="Batch-specific reason (optional)"
+                       style="margin-top: 0.5rem;">
+            </div>
+        </div>
+    `).join('');
+            }
+
+            function toggleBatchItem(batchId) {
+                const checkbox = document.querySelector(`.batch-select[data-batch-id="${batchId}"]`);
+                const inputDiv = document.querySelector(`.batch-adjustment-input[data-batch-id="${batchId}"]`);
+                const batchItem = document.getElementById(`batch_${batchId}`);
+
+                if (checkbox.checked) {
+                    inputDiv.style.display = 'block';
+                    batchItem.classList.add('selected');
+                } else {
+                    inputDiv.style.display = 'none';
+                    batchItem.classList.remove('selected');
+                    // Clear inputs
+                    document.querySelector(`.batch-qty-input[data-batch-id="${batchId}"]`).value = '';
+                    document.querySelector(`.batch-reason-input[data-batch-id="${batchId}"]`).value = '';
+                }
+
+                updateAdjustmentSummary();
+            }
+
+            function handleAdjustmentTypeChange() {
+                const type = document.querySelector('input[name="adj_type"]:checked').value;
+                const fifoOption = document.getElementById('fifoOption');
+
+                if (type === 'subtraction') {
+                    fifoOption.style.display = 'block';
+                } else {
+                    fifoOption.style.display = 'none';
+                    document.getElementById('auto_select_fifo').checked = false;
+                    toggleBatchSelection();
+                }
+            }
+
+            function toggleBatchSelection() {
+                const isFIFO = document.getElementById('auto_select_fifo').checked;
+                const fifoQuantityDiv = document.getElementById('fifoQuantityDiv');
+                const checkboxes = document.querySelectorAll('.batch-select');
+
+                if (isFIFO) {
+                    fifoQuantityDiv.style.display = 'block';
+                    checkboxes.forEach(cb => {
+                        cb.disabled = true;
+                        cb.checked = false;
+                    });
+                    document.querySelectorAll('.batch-adjustment-input').forEach(div => div.style.display = 'none');
+                } else {
+                    fifoQuantityDiv.style.display = 'none';
+                    checkboxes.forEach(cb => cb.disabled = false);
+                }
+            }
+
+            function updateAdjustmentSummary() {
+                const selectedInputs = Array.from(document.querySelectorAll('.batch-qty-input'))
+                    .filter(input => {
+                        const batchId = input.dataset.batchId;
+                        const checkbox = document.querySelector(`.batch-select[data-batch-id="${batchId}"]`);
+                        return checkbox?.checked && input.value;
+                    });
+
+                if (selectedInputs.length === 0) {
+                    document.getElementById('adjustmentSummary').style.display = 'none';
+                    return;
+                }
+
+                const total = selectedInputs.reduce((sum, input) => sum + parseFloat(input.value || 0), 0);
+                const type = document.querySelector('input[name="adj_type"]:checked').value;
+
+                document.getElementById('summaryContent').innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+            <span><strong>Batches Selected:</strong></span>
+            <span>${selectedInputs.length}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+            <span><strong>Total Adjustment:</strong></span>
+            <span style="color: ${type === 'subtraction' ? 'var(--danger)' : 'var(--success)'}; font-weight: 600;">
+                ${type === 'subtraction' ? '-' : '+'}${total.toFixed(2)} units
+            </span>
+        </div>
+    `;
+
+                document.getElementById('adjustmentSummary').style.display = 'block';
+            }
+
+            // Form submission
+            document.getElementById('batchAdjustmentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const itemId = document.getElementById('adj_item_id').value;
+                const locationId = document.getElementById('adj_location_id').value;
+                const type = document.querySelector('input[name="adj_type"]:checked').value;
+                const reason = document.getElementById('adj_reason').value;
+                const autoFIFO = document.getElementById('auto_select_fifo')?.checked || false;
+
+                let batches = [];
+
+                if (autoFIFO) {
+                    const quantity = parseFloat(document.getElementById('fifo_quantity').value);
+                    if (!quantity || quantity <= 0) {
+                        showToast('Please enter a valid quantity', 'error');
+                        return;
+                    }
+                    batches = [{ quantity: -quantity }];  // Negative for subtraction
+                } else {
+                    // Collect selected batches
+                    const selectedInputs = Array.from(document.querySelectorAll('.batch-qty-input'))
+                        .filter(input => {
+                            const batchId = input.dataset.batchId;
+                            const checkbox = document.querySelector(`.batch-select[data-batch-id="${batchId}"]`);
+                            return checkbox?.checked && input.value;
+                        });
+
+                    if (selectedInputs.length === 0) {
+                        showToast('Please select at least one batch', 'error');
+                        return;
+                    }
+
+                    batches = selectedInputs.map(input => {
+                        const batchId = input.dataset.batchId;
+                        const quantity = parseFloat(input.value);
+                        const batchReason = document.querySelector(`.batch-reason-input[data-batch-id="${batchId}"]`).value;
+
+                        return {
+                            batch_id: parseInt(batchId),
+                            quantity: type === 'subtraction' ? -quantity : quantity,
+                            reason: batchReason || reason
+                        };
+                    });
+                }
+
+                try {
+                    const response = await fetch('/api/stock-adjustments/batch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            item_id: parseInt(itemId),
+                            location_id: parseInt(locationId),
+                            adjustment_type: type,
+                            batches,
+                            overall_reason: reason,
+                            auto_select_fifo: autoFIFO
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast('Batch adjustment created successfully', 'success');
+                        closeBatchAdjustmentModal();
+                        // Reload adjustments list if exists
+                        if (typeof loadAdjustments === 'function') {
+                            loadAdjustments();
+                        }
+                    } else {
+                        showToast(data.message || 'Error creating adjustment', 'error');
+                    }
+                } catch (error) {
+                    showToast('Error submitting adjustment', 'error');
+                    console.error(error);
+                }
+            });
+        </script>

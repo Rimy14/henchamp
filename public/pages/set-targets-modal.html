@@ -1,0 +1,159 @@
+<!-- Set Targets Modal -->
+<div class="modal-overlay" id="setTargetsModal" style="display: none;">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-bullseye"></i> Set Monthly Sales Targets</h2>
+            <button class="modal-close" onclick="closeSetTargetsModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+            <!-- Month Selection -->
+            <div class="form-group">
+                <label for="targetMonth">Select Month <span style="color: var(--danger);">*</span></label>
+                <input type="month" id="targetMonth" class="form-control" required>
+            </div>
+
+            <!-- Overall Target -->
+            <div class="form-group">
+                <label for="overallTargetInput">Overall Company Target (Rs) <span
+                        style="color: var(--danger);">*</span></label>
+                <input type="number" id="overallTargetInput" class="form-control" placeholder="e.g., 1000000" min="0"
+                    step="0.01" required>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <!-- Tabs Style -->
+            <style>
+                .target-tabs {
+                    display: flex;
+                    gap: 1rem;
+                    border-bottom: 1px solid var(--gray-300);
+                    margin-bottom: 1rem;
+                }
+
+                .target-tab {
+                    padding: 0.5rem 1rem;
+                    cursor: pointer;
+                    border-bottom: 2px solid transparent;
+                    font-weight: 600;
+                    color: var(--gray-600);
+                }
+
+                .target-tab.active {
+                    border-bottom-color: var(--primary-600);
+                    color: var(--primary-600);
+                }
+            </style>
+
+            <div class="target-tabs">
+                <div class="target-tab active" onclick="switchTargetTab('operators')" id="tab-operators">Designers</div>
+                <div class="target-tab" onclick="switchTargetTab('sales-persons')" id="tab-sales-persons">Sales Persons
+                </div>
+            </div>
+
+            <!-- Designers Tab -->
+            <div id="operatorsTabContent">
+                <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Designer Targets</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="distributeEqually('operators')">
+                            <i class="fas fa-equals"></i> Equal Distribution
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="copyPreviousMonth('operators')">
+                            <i class="fas fa-copy"></i> Copy Previous Month
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="clearTargets('operators')">
+                            <i class="fas fa-eraser"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Designer</th>
+                                <th>Status</th>
+                                <th style="width: 200px;">Target Amount (Rs)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operatorTargetsTableBody">
+                            <tr>
+                                <td colspan="3" class="text-center">Loading operators...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sales Persons Tab -->
+            <div id="salesPersonsTabContent" style="display: none;">
+                <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Sales Person Targets</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="distributeEqually('sales-persons')">
+                            <i class="fas fa-equals"></i> Equal Distribution
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                            onclick="copyPreviousMonth('sales-persons')">
+                            <i class="fas fa-copy"></i> Copy Previous Month
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="clearTargets('sales-persons')">
+                            <i class="fas fa-eraser"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sales Person</th>
+                                <th>Status</th>
+                                <th style="width: 200px;">Target Amount (Rs)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesPersonTargetsTableBody">
+                            <tr>
+                                <td colspan="3" class="text-center">Loading sales persons...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div style="background: var(--gray-100); padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <div style="color: var(--gray-600); font-size: 0.875rem;">Overall Target</div>
+                        <div id="summaryOverallTarget" style="font-size: 1.25rem; font-weight: bold;">KSh 0.00</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-size: 0.875rem;">Sum of Designer Targets</div>
+                        <div id="summaryOperatorSum" style="font-size: 1.25rem; font-weight: bold;">KSh 0.00</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-size: 0.875rem;">Variance</div>
+                        <div id="summaryVariance" style="font-size: 1.25rem; font-weight: bold;">KSh 0.00</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--gray-600); font-size: 0.875rem;">Coverage</div>
+                        <div id="summaryCoverage" style="font-size: 1.25rem; font-weight: bold;">0%</div>
+                    </div>
+                </div>
+                <div id="varianceMessage" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeSetTargetsModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveTargets()" id="saveTargetsBtn">
+                <i class="fas fa-save"></i> Save Targets
+            </button>
+        </div>
+    </div>
+</div>

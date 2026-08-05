@@ -1,0 +1,394 @@
+<!-- Page Actions -->
+<div class="page-actions">
+    <div class="form-group" style="margin: 0;">
+        <label>Filter by Status</label>
+        <select id="statusFilter" class="form-control" style="width: 200px;">
+            <option value="">All Statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Received">Received</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+        <button id="downloadPOTemplateBtn" class="btn btn-secondary" title="Download PO CSV Template">
+            <i class="fas fa-download"></i> Template
+        </button>
+        <button id="bulkUploadPOBtn" class="btn btn-secondary" title="Bulk Upload POs CSV">
+            <i class="fas fa-file-csv"></i> Bulk Upload
+        </button>
+        <button id="createPOBtn" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Purchase Order
+        </button>
+    </div>
+</div>
+
+
+<!-- PO Table -->
+<div class="table-container">
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>PO #</th>
+                    <th>Supplier</th>
+                    <th>Order Date</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="poTableBody">
+                <!-- Data will be populated here by purchase-orders.js -->
+            </tbody>
+        </table>
+    </div>
+    <div id="paginationContainer"></div>
+</div>
+
+<!-- PO Modal -->
+<div id="poModal" class="modal">
+    <div class="modal-content" style="max-width: 1200px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Create Purchase Order</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Issue official purchasing orders to approved vendors</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.hideModal && window.hideModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="poForm" style="margin: 0; display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+            <div style="padding: 1.5rem; flex: 1; overflow-y: auto;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Supplier *</label>
+                        <select id="poSupplier" class="form-control" required>
+                            <option value="">Select supplier...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Order Date *</label>
+                        <input type="date" id="poOrderDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expected Delivery</label>
+                        <input type="date" id="poExpectedDelivery" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tax % </label>
+                        <input type="number" id="poTaxPercent" class="form-control" min="0" max="100" step="0.01" value="0">
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label>Notes</label>
+                        <textarea id="poNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Items Section -->
+                <div class="items-section">
+                    <h3 style="margin-bottom: 1rem;">Add Items</h3>
+                    <div class="item-input-row">
+                        <div class="form-group" style="margin: 0;">
+                            <label>Item</label>
+                            <select id="itemSelect" class="form-control">
+                                <option value="">Select item...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Quantity</label>
+                            <input type="number" id="itemQuantity" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Unit Cost (Excl. Tax)</label>
+                            <input type="number" id="itemPrice" class="form-control" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Tax Rate (%)</label>
+                            <select id="itemTaxRate" class="form-control">
+                                <option value="0">0%</option>
+                                <option value="5">5%</option>
+                                <option value="8">8%</option>
+                                <option value="10">10%</option>
+                                <option value="12">12%</option>
+                                <option value="15">15%</option>
+                                <option value="18">18%</option>
+                            </select>
+                        </div>
+                        <button type="button" id="addItemBtn" class="btn btn-primary" style="height: 38px;">Add</button>
+                        <button type="button" id="createNewItemBtn" class="btn btn-secondary" title="Create New Item" style="height: 38px; display: none;">
+                            <i class="fas fa-plus"></i> New Item
+                        </button>
+                    </div>
+
+                    <div class="po-items-table" style="margin-top: 1rem;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Unit Cost (Excl)</th>
+                                    <th>Tax (%)</th>
+                                    <th>Tax Amount</th>
+                                    <th>Total (Incl)</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="poItemsTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; color: var(--gray-500);">
+                                        No items added yet
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Totals -->
+                <div class="po-totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="poSubtotal">KSh 0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax:</span>
+                        <span id="poTax">KSh 0.00</span>
+                    </div>
+                    <div class="total-row grand">
+                        <span>Total:</span>
+                        <span id="poTotal">KSh 0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+                <button type="button" id="cancelPOBtn" class="btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0e4a35 0%, #166044 100%); border: none; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px;">Create Purchase Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View PO Modal -->
+<div id="viewPOModal" class="modal">
+    <div class="modal-content" style="max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Purchase Order Details</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">View order breakdown, supplier info, and items</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.hideViewModal && window.hideViewModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <div id="viewPOContent" style="padding: 1.5rem; flex: 1; overflow-y: auto;">
+            <!-- PO details will be loaded here -->
+        </div>
+
+        <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+            <button type="button" class="btn" onclick="window.hideViewModal && window.hideViewModal()" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer;">Close</button>
+            <button type="button" id="printPOFromViewBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #0e4a35 0%, #166044 100%); border: none; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px;">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Item Creation Modal (Shared structure from items.html/quotations.html) -->
+<div id="itemModal" class="modal">
+    <div class="modal-content" style="max-width: 800px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <div>
+                    <h2 id="modalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Add New Item</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Create a new item profile for purchase orders</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" onclick="window.hideItemModal && window.hideItemModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+        <form id="itemForm">
+            <div class="form-grid" style="padding: 1.5rem;">
+                <div class="form-group form-grid-full">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName" class="form-control" required>
+                </div>
+
+                <div class="form-group form-grid-full">
+                    <label>Description</label>
+                    <textarea id="itemDescription" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Base Category *</label>
+                    <select id="itemSubCategory" class="form-control" required disabled>
+                        <option value="">Select base category first</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Unit of Measure *</span>
+                        <button type="button" id="addUomBtn" class="btn-icon-small" title="Add New Unit">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </label>
+                    <select id="itemUnit" class="form-control" required>
+                        <option value="">Loading units...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <select id="itemSupplier" class="form-control">
+                        <option value="">Select supplier...</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="sellingPriceGroup">
+                    <label id="sellingPriceLabel">Selling Price *</label>
+                    <input type="number" id="itemSellingPrice" class="form-control" step="0.01" min="0" value="0">
+                </div>
+
+                <div class="form-group" id="reorderLevelGroup">
+                    <label>Reorder Level *</label>
+                    <input type="number" id="itemReorder" class="form-control" min="0" value="0">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 20px 20px;">
+                <button type="button" class="btn" onclick="window.hideItemModal && window.hideItemModal()" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0e4a35 0%, #166044 100%); border: none; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px;">Save Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Inline UOM Creation Modal -->
+<div id="uomCreationModal" class="modal" style="z-index: 1200;">
+    <div class="modal-content" style="max-width: 450px; border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; border: 1px solid rgba(132, 204, 22, 0.3);">
+                    <i class="fas fa-ruler-combined"></i>
+                </div>
+                <div>
+                    <h2 id="uomModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff;">Add Unit of Measure</h2>
+                    <p style="margin: 0.15rem 0 0 0; color: #94a3b8; font-size: 0.775rem;">Define packaging/measurement units</p>
+                </div>
+            </div>
+            <button type="button" class="close-btn" id="closeUomModal" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #cbd5e1; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="uomCreationForm" style="padding: 1.5rem; margin: 0;">
+            <div class="form-group">
+                <label>Unit Name (e.g., Pieces) *</label>
+                <input type="text" id="newUomName" class="form-control" required placeholder="Pieces">
+            </div>
+            <div class="form-group">
+                <label>Short Name / Abbreviation *</label>
+                <input type="text" id="newUomShortName" class="form-control" required placeholder="pcs">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="newUomDescription" class="form-control" rows="2" placeholder="Optional description"></textarea>
+            </div>
+
+            <div class="modal-footer" style="padding-top: 1.5rem; border-top: 1px solid var(--gray-200); margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" id="cancelUomBtn" class="btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="saveUomBtn" style="background: linear-gradient(135deg, #0e4a35 0%, #166044 100%); border: none; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 8px;">Save Unit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bulk Upload PO Modal -->
+<div id="bulkUploadPOModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px; max-height: 90vh; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column;">
+        <div class="modal-header" style="flex-shrink: 0; background: linear-gradient(135deg, #041710 0%, #0e4a35 100%); padding: 1.25rem 1.5rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;">
+                <i class="fas fa-file-csv" style="color: #3b82f6;"></i> Bulk Purchase Order Upload (CSV)
+            </h2>
+            <button type="button" class="close-btn" id="closeBulkUploadPOModalBtn" style="color: #94a3b8; background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; background: #fff; overflow-y: auto; flex: 1;">
+            <!-- Dropzone -->
+            <div id="poCsvDropzone" style="border: 2px dashed #cbd5e1; border-radius: 10px; padding: 2rem; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s; margin-bottom: 1.5rem;">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #3b82f6; margin-bottom: 0.75rem;"></i>
+                <div style="font-weight: 600; color: #1e293b; font-size: 1rem;">Click to select or drag & drop PO CSV file</div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Group items into single POs using matching <code>po_ref</code> values</div>
+                <input type="file" id="poCsvFileInput" accept=".csv" style="display: none;">
+                <div id="selectedPoCsvName" style="margin-top: 0.75rem; font-weight: 600; color: #2563eb; display: none;"></div>
+            </div>
+
+            <!-- Supplier Filter for Template -->
+            <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">
+                    <i class="fas fa-truck" style="color: #2563eb; margin-right: 0.35rem;"></i> Select Supplier to Pre-fill Template
+                </label>
+                <select id="poTemplateSupplierSelect" class="form-control" style="font-size: 0.875rem; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff;">
+                    <option value="">All Suppliers (Use Default Assigned Suppliers)</option>
+                </select>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <button type="button" id="modalDownloadPOTemplateBtn" class="btn btn-secondary" style="border-radius: 6px;">
+                    <i class="fas fa-download"></i> Download CSV Template
+                </button>
+                <button type="button" id="startPoCsvUploadBtn" class="btn btn-primary" style="border-radius: 6px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); display: none;">
+                    <i class="fas fa-upload"></i> Start Upload
+                </button>
+            </div>
+
+
+            <!-- Results Section -->
+            <div id="poBulkUploadResultsContainer" style="display: none;">
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h4 style="margin: 0; font-size: 0.95rem; color: #334155; font-weight: 700;">Upload Results</h4>
+                    <span id="poBulkUploadSummaryBadge" style="font-size: 0.85rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 12px; background: #e2e8f0; color: #334155;"></span>
+                </div>
+                <div style="max-height: 250px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <table class="data-table" style="font-size: 0.85rem; margin: 0;">
+                        <thead style="position: sticky; top: 0; background: #f1f5f9; z-index: 1;">
+                            <tr>
+                                <th style="padding: 0.5rem 0.75rem;">PO Ref</th>
+                                <th style="padding: 0.5rem 0.75rem;">PO Created</th>
+                                <th style="padding: 0.5rem 0.75rem;">Items</th>
+                                <th style="padding: 0.5rem 0.75rem;">Total</th>
+                                <th style="padding: 0.5rem 0.75rem;">Status</th>
+                                <th style="padding: 0.5rem 0.75rem;">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="poBulkResultsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer" style="flex-shrink: 0; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+            <button type="button" id="closePoBulkModalFooterBtn" class="btn btn-secondary" style="border-radius: 6px;">Close</button>
+        </div>
+    </div>
+</div>

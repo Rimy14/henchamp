@@ -1,0 +1,113 @@
+<!-- Dashboard Content -->
+<div class="content-area">
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-5 mb-6">
+        <div class="card">
+            <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Today's Sales</h3>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-600);" id="todaySales">$0
+            </div>
+        </div>
+        <div class="card">
+            <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Low Stock Items</h3>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="lowStock">0</div>
+        </div>
+        <div class="card">
+            <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Pending POs</h3>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--info);" id="pendingPOs">0</div>
+        </div>
+
+        <div class="card">
+            <h3 class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Credit Invoices</h3>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--warning-dark);" id="pendingInvoices">0</div>
+        </div>
+    </div>
+
+    <!-- Charts Section (Sales Trend & Payment Methods) -->
+    <div class="grid grid-cols-2 gap-6 mb-6">
+        <!-- Sales Trend Card -->
+        <div class="card">
+            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 1.5rem;">
+                <h2 class="chart-title" style="margin: 0;">Sales Trend</h2>
+                <select id="salesTrendFilter" class="form-control" style="width: 140px; height: 34px; padding: 0 10px; border-radius: var(--radius-md); border: 1px solid var(--border-light); font-weight: 500; cursor: pointer; background-color: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem;">
+                    <option value="today">Today</option>
+                    <option value="7d" selected>Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                </select>
+            </div>
+            <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Payment Breakdown Card -->
+        <div class="card">
+            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 1.5rem;">
+                <h2 class="chart-title" style="margin: 0;">Payment Methods</h2>
+                <select id="paymentMethodsFilter" class="form-control" style="width: 140px; height: 34px; padding: 0 10px; border-radius: var(--radius-md); border: 1px solid var(--border-light); font-weight: 500; cursor: pointer; background-color: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem;">
+                    <option value="today">Today</option>
+                    <option value="7d" selected>Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                </select>
+            </div>
+            <div style="position: relative; height: 320px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                <canvas id="paymentMethodsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div class="quick-actions-grid" style="margin-bottom: 0;">
+            <a href="/app.html#/pos" class="quick-action-btn qa-sale">
+                <i class="fas fa-cash-register"></i>
+                <span>New Sale</span>
+            </a>
+            <a href="/app.html#/purchase-orders" class="quick-action-btn qa-po">
+                <i class="fas fa-file-contract"></i>
+                <span>New PO</span>
+            </a>
+            <a href="/app.html#/items" class="quick-action-btn qa-item">
+                <i class="fas fa-box"></i>
+                <span>Add Item</span>
+            </a>
+            <a href="/app.html#/reports" class="quick-action-btn qa-report">
+                <i class="fas fa-chart-bar"></i>
+                <span>View Reports</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Sales -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Recent Sales</h2>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Cashier</th>
+                    </tr>
+                </thead>
+                <tbody id="recentSalesTable">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="salesPaginationContainer"></div>
+        </div>
+    </div>
+</div>

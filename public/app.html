@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="HenChamp Supply Hub — Supply Chain Management System">
+    <title>HenChamp Supply Hub</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/img/logo-emerald.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Decimal.js for precise currency calculations -->
+    <script src="https://cdn.jsdelivr.net/npm/decimal.js@10.4.3/decimal.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="/css/main.css?v=5">
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/lazy-loading.css">
+    <link rel="stylesheet" href="/css/dashboard.css?v=3">
+    <link rel="stylesheet" href="/css/pos-discount.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="/css/purchase-orders.css">
+    <link rel="stylesheet" href="/css/grn.css">
+    <link rel="stylesheet" href="/css/bom.css">
+    <link rel="stylesheet" href="/css/users.css?v=1">
+    <link rel="stylesheet" href="/css/customers.css">
+    <link rel="stylesheet" href="/css/suppliers.css">
+    <link rel="stylesheet" href="/css/reports.css">
+    <link rel="stylesheet" href="/css/production.css">
+    <link rel="stylesheet" href="/css/notifications.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar and Top Bar are injected by frame.js via app-shell -->
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Content Area (dynamic, managed by router) -->
+            <div id="content-area"></div>
+        </main>
+    </div>
+
+    <!-- Loading Screen and Toasts -->
+    <script type="module" src="/js/loading-screen.js"></script>
+    <script type="module" src="/js/toast.js"></script>
+    <script type="module" src="/js/message-modal.js"></script>
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- html2canvas for PNG export -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <!-- ExcelJS for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+
+    <!-- QZ Tray Library for Direct Thermal Printing -->
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2/qz-tray.js"></script>
+    <script type="module" src="/js/qz-config.js"></script>
+    <script type="module" src="/js/pos-printer.js"></script>
+
+    <!-- Global Error Handler -->
+    <script>
+        window.onerror = function (msg, url, line) {
+            // Only show alert for our scripts, ignore extension errors
+            if (url && (url.includes('localhost') || url.includes('127.0.0.1'))) {
+                alert('App Error: ' + msg + '\nLine: ' + line);
+            }
+            console.error('Global Error:', msg, url, line);
+        };
+    </script>
+
+    <!-- Receipt Modal Container (for POS printing) -->
+    <div id="receipt-modal-container"></div>
+    <script>
+        // Load receipt modal HTML globally so it's available for POS
+        // Add cache-busting to ensure latest version loads
+        fetch('/pages/pos-receipt-modal.html?v=' + Date.now())
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('receipt-modal-container').innerHTML = html;
+                console.log('✅ Receipt modal HTML loaded');
+            })
+            .catch(err => console.error('❌ Failed to load receipt modal:', err));
+    </script>
+
+    <!-- Global Receipt Modal Functions -->
+    <script>
+        // Define globally so it's available when modal loads
+        window.closeReceiptPreview = function () {
+            const modal = document.getElementById('receiptPreviewModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+
+    <!-- Initialize App Shell -->
+    <script type="module">
+        import appShell from '/js/app-shell.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                appShell.init();
+            } catch (e) {
+                alert('Init Error: ' + e.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!-- Receipt Preview Modal -->
+<div id="receiptPreviewModal" class="modal-overlay" style="display: none; z-index: 1070;">
+    <div class="modal-container" style="max-width: 420px;">
+        <div class="modal-header">
+            <h3>Receipt Preview</h3>
+            <button class="btn-icon" onclick="closeReceiptPreview()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 0; max-height: 60vh; overflow-y: auto;">
+            <div id="receipt-preview"
+                style="padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 13px; background: white; color: black;">
+                <!-- Receipt content will be injected here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeReceiptPreview()">Close</button>
+            <button class="btn btn-primary" onclick="printReceiptNow()">
+                <i class="fas fa-print"></i> Print Receipt
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Receipt Preview Specific Styles - Optimized for 80mm Thermal Printer */
+    #receipt-preview {
+        max-width: 68mm;
+        width: 68mm;
+        margin: 0 auto;
+        line-height: 1.3;
+        color: #000 !important;
+        background: #fff !important;
+        visibility: visible !important;
+        display: block !important;
+        font-family: 'Courier New', 'Consolas', monospace;
+    }
+
+    #receipt-preview * {
+        color: #000 !important;
+        visibility: visible !important;
+    }
+
+    .receipt-logo {
+        display: block;
+        margin: 0 auto 8px auto;
+        max-width: 60mm;
+        max-height: 25mm;
+        object-fit: contain;
+    }
+
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000;
+    }
+
+    .receipt-header h2 {
+        font-size: 16px;
+        margin: 0 0 6px 0;
+        font-weight: bold;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+    }
+
+    .receipt-header p {
+        margin: 2px 0;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .receipt-details {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+    .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+
+    .receipt-table th {
+        text-align: left;
+        border-bottom: 1px dashed #000;
+        padding: 3px 0;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .receipt-table td {
+        padding: 4px 0;
+        vertical-align: top;
+        font-size: 10px;
+    }
+
+    .receipt-item-name {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 2px;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .receipt-item-meta {
+        display: block;
+        font-size: 9px;
+        color: #444 !important;
+        line-height: 1.2;
+    }
+
+    .receipt-totals {
+        border-top: 2px solid #000;
+        padding-top: 10px;
+        margin-bottom: 12px;
+    }
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .receipt-row.bold {
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 2px solid #000;
+        letter-spacing: 0.5px;
+    }
+
+    .receipt-footer {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 10px;
+        border-top: 2px dashed #000;
+        padding-top: 8px;
+        line-height: 1.3;
+    }
+
+    .receipt-feed {
+        height: 20mm;
+        page-break-after: always;
+    }
+
+    /* Print Styles for 80mm Thermal Printer */
+    @media print {
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
+        body * {
+            visibility: hidden;
+        }
+
+        #receipt-preview,
+        #receipt-preview * {
+            visibility: visible;
+        }
+
+        #receipt-preview {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 68mm;
+            max-width: 68mm;
+            margin: 0 auto;
+            padding: 3mm 6mm;
+            background: white !important;
+            font-size: 10px;
+        }
+
+        .modal-overlay,
+        .modal-container,
+        .modal-header,
+        .modal-footer,
+        .btn,
+        .btn-icon {
+            display: none !important;
+        }
+
+        .receipt-logo {
+            max-width: 55mm;
+            max-height: 20mm;
+            margin-bottom: 6px;
+        }
+
+        .receipt-header {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #000;
+        }
+
+        .receipt-header h2 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .receipt-header p {
+            font-size: 9px;
+            margin: 1px 0;
+        }
+
+        .receipt-details {
+            font-size: 9px;
+            margin-bottom: 8px;
+        }
+
+        .receipt-table th,
+        .receipt-table td {
+            font-size: 9px;
+            padding: 2px 0;
+        }
+
+        .receipt-item-name {
+            font-size: 10px;
+        }
+
+        .receipt-item-meta {
+            display: block;
+            font-size: 8px;
+        }
+
+        .receipt-row {
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        .receipt-row.bold {
+            font-size: 12px;
+            margin-top: 4px;
+            padding-top: 4px;
+        }
+
+        .receipt-footer {
+            font-size: 9px;
+            margin-top: 8px;
+            padding-top: 6px;
+        }
+
+        /* Optimize for thermal printer - prevent cutting */
+        .receipt-table,
+        .receipt-totals,
+        .receipt-footer {
+            page-break-inside: avoid;
+        }
+
+        /* Feed section for auto-cut */
+        .receipt-feed {
+            height: 20mm;
+            page-break-after: always;
+            display: block;
+        }
+    }
+</style>
+
+<script>
+    window.closeReceiptPreview = function () {
+        const modal = document.getElementById('receiptPreviewModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    window.printReceiptNow = async function () {
+        console.log('[Print] Print button clicked');
+
+        // Get receipt HTML content
+        const receiptContent = document.getElementById('receipt-preview');
+        if (!receiptContent) {
+            console.error('[Print] Receipt content not found');
+            alert('Receipt content not found');
+            return;
+        }
+
+        // Check if QZ Tray is available
+        if (!window.qzPrinter) {
+            console.warn('[Print] QZ Tray not available, using browser print');
+            window.print();
+            return;
+        }
+
+        // Try QZ Tray for direct thermal printing
+        try {
+            console.log('[Print] QZ Tray detected, attempting direct print...');
+
+            // Get the full HTML with styles
+            const receiptHTML = receiptContent.outerHTML;
+            console.log('[Print] Receipt HTML length:', receiptHTML.length);
+
+            // Print directly to thermal printer
+            await window.qzPrinter.printHTML(receiptHTML);
+
+            console.log('[Print] ✅ Receipt sent to thermal printer successfully!');
+
+            // Show success message
+            try {
+                if (window.toast) {
+                    window.toast.success('Receipt sent to printer');
+                }
+            } catch (e) {
+                console.warn('[Print] Toast notification failed:', e);
+            }
+
+            // Close modal after successful print
+            setTimeout(() => {
+                closeReceiptPreview();
+            }, 500);
+
+            // IMPORTANT: Return here to prevent fallback to browser print
+            return;
+
+        } catch (error) {
+            console.error('[Print] QZ Tray print failed:', error);
+            console.error('[Print] Error details:', error.message, error.stack);
+
+            // Ask user if they want to use browser print as fallback
+            const useBrowserPrint = confirm(
+                'Direct printing failed: ' + error.message +
+                '\n\nWould you like to use the browser print dialog instead?'
+            );
+
+            if (useBrowserPrint) {
+                console.log('[Print] User chose browser print fallback');
+                window.print();
+            } else {
+                console.log('[Print] User cancelled print');
+            }
+        }
+    };
+</script>

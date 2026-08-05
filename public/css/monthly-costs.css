@@ -1,0 +1,89 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#add-cost-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Month Filter Styles */
+.date-filter {
+    position: relative;
+    display: inline-block;
+}
+
+#month-filter {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4a5568;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-family: inherit;
+    min-width: 160px;
+}
+
+#month-filter:hover {
+    border-color: #cbd5e0;
+    background-color: #f8fafc;
+}
+
+#month-filter:focus {
+    outline: none;
+    border-color: var(--primary-color, #4299e1);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+/* Custom calendar icon styling for webkit browsers */
+#month-filter::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    filter: invert(0.4);
+    /* Adjust based on theme needed, darker gray by default */
+}
+
+#month-filter:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="HenChamp Supply Hub — Supply Chain & POS Management System">
+    <title>Sign In | HenChamp Supply Hub</title>
+    <link rel="icon" href="/img/logo-emerald.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Base & Branded Styles -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/toast.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body class="luxury-login-page">
+
+    <!-- Left Sidebar Mimicking Reference -->
+    <aside class="luxury-sidebar">
+        <div class="sidebar-logo">
+            <img src="/img/logo-emerald.png" alt="HenChamp Solutions">
+            <div class="logo-text"><strong>HenChamp</strong><br>Solutions</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">DISCOVER</div>
+            <div class="nav-item">RESEARCH</div>
+            <div class="nav-item">PIN</div>
+            <div class="nav-item active">PLAN</div>
+            <div class="nav-item">COLLABORATE</div>
+            <div class="nav-item">TRACK</div>
+            <div class="nav-item">EXPORT</div>
+            <div class="nav-item">REQUEST</div>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="luxury-main">
+        <div class="top-right-icon">
+            <i class="fa-regular fa-bookmark"></i>
+        </div>
+
+        <!-- Decorative Floating Cards -->
+        <div class="floating-card pos-1">
+            <div class="fc-image flex-center"><i class="fas fa-box-open fc-icon"></i></div>
+            <div class="fc-footer">
+                <div class="fc-title">PACKAGING</div>
+                <div class="fc-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
+            </div>
+        </div>
+
+        <div class="floating-card pos-2">
+            <div class="fc-image flex-center"><i class="fas fa-print fc-icon"></i></div>
+            <div class="fc-footer">
+                <div class="fc-title">PRINTING</div>
+                <div class="fc-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
+            </div>
+        </div>
+        
+        <div class="floating-card pos-3">
+            <div class="fc-image flex-center"><i class="fas fa-laptop fc-icon"></i></div>
+            <div class="fc-footer">
+                <div class="fc-title">EQUIPMENT</div>
+                <div class="fc-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
+            </div>
+        </div>
+
+        <div class="floating-card pos-4">
+            <div class="fc-image flex-center"><i class="fas fa-tshirt fc-icon"></i></div>
+            <div class="fc-footer">
+                <div class="fc-title">UNIFORMS</div>
+                <div class="fc-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
+            </div>
+        </div>
+
+        <!-- Central Login Form Area -->
+        <div class="login-subject-container">
+            <div class="luxury-login-card">
+                <h2>Welcome Back</h2>
+                <p>Sign in to access your dashboard</p>
+                
+                <form id="loginForm" class="login-form">
+                    <div class="login-form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required autocomplete="username" placeholder="Username">
+                    </div>
+
+                    <div class="login-form-group password-group">
+                        <label for="password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Password">
+                            <button type="button" class="password-toggle-btn" id="togglePassword" title="Toggle password visibility">
+                                <i class="fa-regular fa-eye" id="togglePasswordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-luxury-submit" id="loginBtn">
+                        <span class="btn-text">Sign In</span>
+                        <span class="btn-loader" style="display: none;">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        </span>
+                    </button>
+
+                    <div id="errorMessage" class="login-error-alert" style="display: none;">
+                        <span id="errorText"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="/js/loading-screen.js"></script>
+    <script type="module" src="/js/toast.js"></script>
+    <script type="module" src="/js/login.js"></script>
+</body>
+</html>

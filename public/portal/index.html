@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HenChamp Solutions</title>
+    <link rel="icon" href="/img/logo-emerald.png" type="image/png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f6f6f6;
+            --sidebar-bg: #f0f0f0;
+            --text-main: #111;
+            --text-muted: #888;
+            --card-bg: #fff;
+            --hc-green: #0e4a35;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+        
+        /* Sidebar */
+        .luxury-sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e5e5e5;
+            z-index: 10;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .sidebar-logo img {
+            height: 36px;
+        }
+        
+        .sidebar-logo .logo-text {
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: 0.05em;
+            text-transform: lowercase;
+        }
+        
+        .sidebar-logo .logo-text strong {
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--hc-green);
+        }
+        
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        
+        .nav-item {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        
+        /* Main Area */
+        .luxury-main {
+            flex: 1;
+            position: relative;
+        }
+        
+        .top-right-icon {
+            position: absolute;
+            top: 2.5rem;
+            right: 3rem;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        /* Floating Cards Container */
+        #featuredGrid {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .floating-product {
+            position: absolute;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .floating-product:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            z-index: 10 !important;
+        }
+        
+        .fp-image {
+            width: 220px;
+            height: 280px;
+            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .fp-image i {
+            font-size: 5rem;
+            color: var(--hc-green);
+            opacity: 0.85;
+        }
+        
+        .fp-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 4px;
+        }
+        
+        .fp-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .fp-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .fp-subtitle {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        .fp-badge {
+            background: #d6d6d6;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.05em;
+        }
+        
+        .fp-badge i {
+            font-size: 8px;
+        }
+
+        /* Fixed positions to mimic scattered look */
+        .fp-pos-0 { top: 10%; left: 15%; transform: scale(0.9); z-index: 2; }
+        .fp-pos-1 { top: 35%; left: 45%; transform: scale(1.1); z-index: 5; }
+        .fp-pos-2 { top: 15%; right: 10%; transform: scale(0.85); z-index: 3; }
+        .fp-pos-3 { bottom: 8%; left: 20%; transform: scale(0.95); z-index: 4; }
+        .fp-pos-4 { bottom: 15%; right: 15%; transform: scale(1); z-index: 4; }
+        
+    </style>
+</head>
+<body>
+
+    <aside class="luxury-sidebar">
+        <a href="/" class="sidebar-logo">
+            <img src="/img/logo-emerald.png" alt="HenChamp">
+            <div class="logo-text"><strong>HenChamp</strong><br>Solutions</div>
+        </a>
+        <nav class="sidebar-nav">
+            <a href="/catalogue.html" class="nav-item">DISCOVER</a>
+            <a href="/catalogue.html" class="nav-item">RESEARCH</a>
+            <a href="/catalogue.html" class="nav-item">PIN</a>
+            <a href="/store.html" class="nav-item active">PLAN</a>
+            <a href="/catalogue.html" class="nav-item">COLLABORATE</a>
+            <a href="/catalogue.html" class="nav-item">TRACK</a>
+            <a href="/catalogue.html" class="nav-item">EXPORT</a>
+            <a href="/catalogue.html" class="nav-item">REQUEST</a>
+        </nav>
+    </aside>
+
+    <main class="luxury-main">
+        <div class="top-right-icon">
+            <i class="fa-regular fa-bookmark"></i>
+        </div>
+
+        <div id="featuredGrid">
+            <!-- Dynamically populated -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem;"></i>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('featuredGrid');
+            if (!grid) return;
+
+            const categoryIcons = {
+                'PNS': 'fa-print', 'OEQ': 'fa-desktop', 'UNI': 'fa-tshirt', 'BNE': 'fa-tools',
+                'LNM': 'fa-microscope', 'ICT': 'fa-laptop-code', 'SEC': 'fa-shield-alt',
+                'INT': 'fa-couch', 'PNT': 'fa-paint-roller'
+            };
+            const escapeHtml = (str) => !str ? '' : str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+            try {
+                const res = await fetch('/api/config/public-items');
+                const data = await res.json();
+                if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+                    grid.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">No items found.</div>';
+                    return;
+                }
+                
+                const featured = data.data.slice(0, 5); // Take up to 5 items to mimic scattered layout
+                grid.innerHTML = featured.map((item, index) => {
+                    const catPrefix = item.code ? item.code.split('-')[0] : 'PKG';
+                    const iconClass = categoryIcons[catPrefix] || 'fa-box-open';
+                    
+                    return \`
+                        <a href="/catalogue.html?cat=\${catPrefix}" class="floating-product fp-pos-\${index}">
+                            <div class="fp-image">
+                                <i class="fas \${iconClass}"></i>
+                            </div>
+                            <div class="fp-footer">
+                                <div class="fp-info">
+                                    <div class="fp-title">\${escapeHtml(item.name).substring(0, 20)}</div>
+                                    <div class="fp-subtitle">LOOK \${index + 1}</div>
+                                </div>
+                                <div class="fp-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
+                            </div>
+                        </a>
+                    \`;
+                }).join('');
+            } catch (err) {
+                grid.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">Error loading items.</div>';
+            }
+        });
+    </script>
+</body>
+</html>
