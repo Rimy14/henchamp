@@ -9,19 +9,27 @@
  */
 
 
-import { query, transaction } from '../../config/database.js';
 import {
-    restoreSubscriber
+    query,
+    transaction
 }
-from '../isp/lifecycle.service.js';
+from '../../config/database.js';
+
 
 
 export async function createISPInvoice({
+
     customerId,
+
     subscriberId,
+
     amount,
+
     packageName,
-    cashierId = Number(process.env.ISP_SYSTEM_USER_ID || 1)
+
+    cashierId =
+    Number(process.env.ISP_SYSTEM_USER_ID || 1)
+
 }) {
 
 
@@ -30,7 +38,8 @@ export async function createISPInvoice({
 
 
 
-    const result = await query(
+    const result =
+    await query(
         `
         INSERT INTO sales
         (
@@ -44,6 +53,7 @@ export async function createISPInvoice({
             status,
             notes
         )
+
         VALUES
         (
             ?,
@@ -52,25 +62,34 @@ export async function createISPInvoice({
             ?,
             ?,
             NULL,
-            'pending',
+            'Pending',
             'pending',
             ?
         )
         `,
         [
+
             invoiceNumber,
+
             customerId,
+
             cashierId,
+
             amount,
+
             amount,
+
             `ISP Subscription - ${packageName} - Subscriber ${subscriberId}`
+
         ]
     );
 
 
+
     return {
 
-        saleId: result.insertId,
+        saleId:
+        result.insertId,
 
         invoiceNumber,
 
@@ -82,10 +101,15 @@ export async function createISPInvoice({
 
 
 
-export async function getInvoice(invoiceNumber){
 
 
-    const rows = await query(
+export async function getInvoice(
+    invoiceNumber
+){
+
+
+    const rows =
+    await query(
         `
         SELECT *
         FROM sales
@@ -104,15 +128,21 @@ export async function getInvoice(invoiceNumber){
 
 
 
+
 export async function markInvoicePaid(
     saleId,
     paymentReference
 ){
 
-    await transaction(async(conn)=>{
+
+    await transaction(
+    async(conn)=>{
 
 
-        // 1. Complete POS invoice
+        /*
+            1.
+            Complete POS invoice
+        */
 
         await conn.execute(
         `
@@ -129,7 +159,11 @@ export async function markInvoicePaid(
 
 
 
-        // 2. Create payment record
+
+        /*
+            2.
+            Create payment record
+        */
 
         await conn.execute(
         `
@@ -141,74 +175,70 @@ export async function markInvoicePaid(
             reference_number,
             notes
         )
+
         SELECT
+
             id,
+
             'Mobile Money',
+
             total_amount,
+
             ?,
+
             'ISP payment'
+
         FROM sales
+
         WHERE id=?
         `,
         [
+
             paymentReference,
+
             saleId
+
         ]
         );
 
 
 
-    });
 
+        /*
+            3.
+            Update ISP subscription payment status
+        */
 
-
-    /*
-        B2 restore flow
-
-        Payment received
-              |
-              ↓
-        restoreSubscriber()
-              |
-              ↓
-        RADIUS unblock
-              |
-              ↓
-        subscriber active
-    */
-
-
-    const subscriptions =
-        await query(
+        await conn.execute(
         `
-        SELECT subscriber_id
-        FROM isp_subscriptions
+        UPDATE isp_subscriptions
+
+        SET
+
+            status='paid',
+
+            paid_at=NOW()
+
         WHERE invoice_ref =
         (
+
             SELECT invoice_number
+
             FROM sales
+
             WHERE id=?
+
         )
         `,
         [
+
             saleId
+
         ]
         );
 
 
-
-    for(const subscription of subscriptions){
-
-
-        await restoreSubscriber(
-            subscription.subscriber_id,
-            {
-                reason:'payment received'
-            }
-        );
-
-
-    }
+    });
 
 
 }
