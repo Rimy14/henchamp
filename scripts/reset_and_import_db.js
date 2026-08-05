@@ -111,7 +111,10 @@ async function resetAndImportDatabase() {
         await connection.end();
         process.exit(0);
     } catch (error) {
-        console.error('❌ Database reset and import failed:', error);
+        console.error('❌ Database reset and import failed:', error.message || error);
+        if (error.code) {
+            console.error('   Error Code:', error.code);
+        }
         if (connection) {
             await connection.end();
         }
