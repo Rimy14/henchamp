@@ -122,4 +122,22 @@ router.delete('/:id', checkPermission('customers:delete'), async (req, res) => {
     }
 });
 
+/**
+ * Get customer purchase history (sales logs)
+ */
+router.get('/:id/history', async (req, res) => {
+    try {
+        const history = await query(
+            `SELECT id, invoice_number, sale_date, subtotal, tax_amount, discount_amount, total_amount, payment_method, payment_status 
+             FROM sales 
+             WHERE customer_id = ? 
+             ORDER BY sale_date DESC`,
+            [req.params.id]
+        );
+        res.json({ success: true, data: history });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 export default router;

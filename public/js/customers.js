@@ -48,6 +48,12 @@ export default async function init() {
     const cancelBtn = document.getElementById('cancelBtn');
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
 
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+    if (closeHistoryBtn) closeHistoryBtn.addEventListener('click', closeHistoryModal);
+
+    const closeHistoryModalBtn = document.getElementById('closeHistoryModalBtn');
+    if (closeHistoryModalBtn) closeHistoryModalBtn.addEventListener('click', closeHistoryModal);
+
     const form = document.getElementById('customerForm');
     if (form) form.addEventListener('submit', handleSubmit);
 
@@ -168,6 +174,9 @@ function renderCustomers() {
 
             <td>
                 <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-info" onclick="window.viewCustomerHistory(${customer.id})" title="Purchase History">
+                        <i class="fas fa-history"></i>
+                    </button>
                     <button class="btn btn-sm btn-secondary" onclick="window.editCustomer(${customer.id})">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -282,3 +291,62 @@ window.deleteCustomer = async function (id) {
         }
     );
 };
+
+window.viewCustomerHistory = async function (id) {
+    const customer = customers.find(c => c.id === id);
+    if (!customer) return;
+
+    document.getElementById('historyModalSubtitle').textContent = `Viewing historical invoice purchases for ${customer.name}`;
+    const tbody = document.getElementById('historyTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading purchase logs...</td></tr>';
+
+    // Show modal
+    const modal = document.getElementById('customerHistoryModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+
+    try {
+        const response = await api.customers.getHistory(id);
+        if (response.success && Array.isArray(response.data)) {
+            const history = response.data;
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No purchases found for this customer.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = history.map(inv => {
+                const dateStr = new Date(inv.sale_date).toLocaleDateString('en-GB');
+                const subtotal = parseFloat(inv.subtotal).toFixed(2);
+                const tax = parseFloat(inv.tax_amount || 0).toFixed(2);
+                const discount = parseFloat(inv.discount_amount || 0).toFixed(2);
+                const total = parseFloat(inv.total_amount).toFixed(2);
+                
+                const isPaid = inv.payment_status.toLowerCase() === 'paid';
+                const statusBadge = isPaid 
+                    ? `<span class="badge" style="background: rgba(14, 74, 53, 0.1); color: #0e4a35;">Paid</span>`
+                    : `<span class="badge" style="background: rgba(200, 169, 106, 0.15); color: #b27a00;">Pending</span>`;
+
+                return `
+                    <tr>
+                        <td><strong>${inv.invoice_number}</strong></td>
+                        <td>${dateStr}</td>
+                        <td>KES ${subtotal}</td>
+                        <td>KES ${tax}</td>
+                        <td>KES ${discount}</td>
+                        <td><strong>KES ${total}</strong></td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (err) {
+        console.error('Error fetching history:', err);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger); padding: 2rem;">Failed to load history: ${err.message}</td></tr>`;
+    }
+};
+
+function closeHistoryModal() {
+    const modal = document.getElementById('customerHistoryModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+}

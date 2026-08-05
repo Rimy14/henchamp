@@ -213,7 +213,8 @@ class APIClient {
         },
         create: (customerData) => this.post('/customers', customerData),
         update: (id, customerData) => this.put(`/customers/${id}`, customerData),
-        delete: (id) => this.delete(`/customers/${id}`)
+        delete: (id) => this.delete(`/customers/${id}`),
+        getHistory: (id) => this.get(`/customers/${id}/history`)
     };
 
     // Item endpoints
