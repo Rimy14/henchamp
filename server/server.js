@@ -28,6 +28,7 @@ import reportRoutes from './routes/report.routes.js';
 import bomRoutes from './routes/bom.routes.js';
 import productionRoutes from './routes/production.routes.js';
 import quotationRoutes from './routes/quotation.routes.js';
+import portalRoutes from './routes/portal.routes.js';
 import monthlyCostsRoutes from './routes/monthly_costs.routes.js';
 import uomRoutes from './routes/uom.routes.js';
 import pettyCashRoutes from './routes/petty-cash.routes.js';
@@ -152,6 +153,9 @@ app.use('/api/grn', grnRoutes);
 
 // Quotation routes
 app.use('/api/quotations', quotationRoutes);
+
+// Customer Portal routes
+app.use('/api/portal', portalRoutes);
 
 // Stock movement routes
 app.use('/api/stock-transfers', stockTransferRoutes);

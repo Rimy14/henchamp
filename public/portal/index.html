@@ -3,34 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HenChamp Solutions</title>
+    <title>HenChamp Solutions — Customer Portal</title>
     <link rel="icon" href="/img/logo-emerald.png" type="image/png">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Global CSS Variables -->
     <style>
         :root {
-            --bg-color: #f6f6f6;
-            --sidebar-bg: #f0f0f0;
-            --text-main: #111;
-            --text-muted: #888;
-            --card-bg: #fff;
+            --bg-color: #f4f2ea;
+            --sidebar-bg: #ece9dc;
+            --text-main: #111111;
+            --text-muted: #767666;
+            --card-bg: #ffffff;
+            --border-color: #dcdccb;
             --hc-green: #0e4a35;
+            --hc-green-hover: #1c7a54;
+            --hc-lime: #a6ce3a;
+            --hc-gold: #c8a96a;
+            --shadow-sm: 0 4px 6px rgba(14, 74, 53, 0.05);
+            --shadow-md: 0 10px 25px rgba(14, 74, 53, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
         }
-        
+
         body {
             background-color: var(--bg-color);
             display: flex;
@@ -38,254 +48,940 @@
             overflow: hidden;
             color: var(--text-main);
         }
-        
+
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 74, 53, 0.6);
+            backdrop-filter: blur(16px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.4s ease;
+        }
+
+        .login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .login-card {
+            background: rgba(251, 249, 243, 0.95);
+            border: 1px solid var(--border-color);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 460px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 25px 50px -12px rgba(14, 74, 53, 0.4);
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 2rem;
+        }
+
+        .login-logo img {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .login-logo h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--hc-green);
+        }
+
+        .login-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--hc-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.25s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--hc-green);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--hc-green);
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.25s, transform 0.25s;
+        }
+
+        .btn-login:hover {
+            background: var(--hc-green-hover);
+            transform: translateY(-2px);
+        }
+
+        .login-help {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .login-help code {
+            background: rgba(14, 74, 53, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--hc-green);
+        }
+
         /* Sidebar */
         .luxury-sidebar {
-            width: 240px;
+            width: 260px;
             background-color: var(--sidebar-bg);
-            padding: 2.5rem;
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #e5e5e5;
-            z-index: 10;
+            border-right: 1px solid var(--border-color);
+            z-index: 100;
         }
-        
+
         .sidebar-logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 6rem;
+            margin-bottom: 3rem;
             text-decoration: none;
             color: inherit;
         }
-        
+
         .sidebar-logo img {
-            height: 36px;
+            height: 38px;
         }
-        
+
         .sidebar-logo .logo-text {
             font-size: 13px;
             font-weight: 400;
             line-height: 1.2;
             letter-spacing: 0.05em;
-            text-transform: lowercase;
         }
-        
+
         .sidebar-logo .logo-text strong {
             font-weight: 800;
             text-transform: uppercase;
             color: var(--hc-green);
         }
-        
+
+        .customer-welcome {
+            background: rgba(14, 74, 53, 0.05);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+            border: 1px dashed var(--border-color);
+        }
+
+        .customer-welcome h4 {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .customer-welcome p {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--hc-green);
+        }
+
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 0.5rem;
+            flex: 1;
         }
-        
+
         .nav-item {
-            font-size: 11px;
-            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             text-decoration: none;
-            transition: color 0.3s;
+            transition: all 0.25s;
         }
-        
+
         .nav-item:hover, .nav-item.active {
-            color: var(--text-main);
-            font-weight: 700;
+            color: #ffffff;
+            background-color: var(--hc-green);
         }
-        
-        /* Main Area */
+
+        .btn-logout {
+            margin-top: auto;
+            color: #b23a3a;
+            border: 1px solid rgba(178, 58, 58, 0.3);
+            background: rgba(178, 58, 58, 0.05);
+        }
+
+        .btn-logout:hover {
+            background: #b23a3a;
+            color: #ffffff;
+            border-color: #b23a3a;
+        }
+
+        /* Main Content */
         .luxury-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-color);
+        }
+
+        .main-header {
+            padding: 1.5rem 3rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(251, 249, 243, 0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .main-header h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--hc-green);
+            letter-spacing: -0.02em;
+        }
+
+        .tab-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Plan Dashboard View */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: var(--hc-green);
+        }
+
+        .plan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--bg-color);
+            padding-bottom: 1.5rem;
+        }
+
+        .plan-badge {
+            background: var(--hc-lime);
+            color: var(--hc-green);
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--hc-green);
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            font-size: 0.9rem;
+            margin-bottom: 0.85rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li i {
+            color: var(--hc-green);
+        }
+
+        .plan-price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .plan-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .plan-price-period {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Invoices Log View */
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: var(--sidebar-bg);
+            padding: 1.1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 1.1rem 1.5rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-paid {
+            background: rgba(14, 74, 53, 0.1);
+            color: var(--hc-green);
+        }
+
+        .badge-pending {
+            background: rgba(200, 169, 106, 0.15);
+            color: #b27a00;
+        }
+
+        /* Catalog Storefront Grid */
+        .catalog-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .catalog-header {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-bar {
             flex: 1;
             position: relative;
         }
-        
-        .top-right-icon {
+
+        .search-bar i {
             position: absolute;
-            top: 2.5rem;
-            right: 3rem;
-            font-size: 1.5rem;
-            color: var(--text-main);
-            cursor: pointer;
-            z-index: 100;
-        }
-        
-        /* Floating Cards Container */
-        #featuredGrid {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .floating-product {
-            position: absolute;
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        .floating-product:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-            z-index: 10 !important;
-        }
-        
-        .fp-image {
-            width: 220px;
-            height: 280px;
-            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .fp-image i {
-            font-size: 5rem;
-            color: var(--hc-green);
-            opacity: 0.85;
-        }
-        
-        .fp-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 4px;
-        }
-        
-        .fp-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        
-        .fp-title {
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .fp-subtitle {
-            font-size: 10px;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--text-muted);
-            font-weight: 600;
         }
-        
-        .fp-badge {
-            background: #d6d6d6;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.5rem;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            outline: none;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
             display: flex;
+            flex-direction: column;
+        }
+
+        .product-img {
+            height: 160px;
+            background: var(--sidebar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .product-img i {
+            font-size: 3.5rem;
+            color: var(--hc-green);
+            opacity: 0.8;
+        }
+
+        .stock-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stock-in {
+            background: rgba(14, 74, 53, 0.1);
+            color: var(--hc-green);
+        }
+
+        .stock-out {
+            background: rgba(178, 58, 58, 0.1);
+            color: #b23a3a;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .product-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .product-info p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            border-top: 1px solid var(--bg-color);
+            padding-top: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--hc-green);
+        }
+
+        .btn-add-cart {
+            background: var(--hc-green);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            letter-spacing: 0.05em;
-        }
-        
-        .fp-badge i {
-            font-size: 8px;
         }
 
-        /* Fixed positions to mimic scattered look */
-        .fp-pos-0 { top: 10%; left: 15%; transform: scale(0.9); z-index: 2; }
-        .fp-pos-1 { top: 35%; left: 45%; transform: scale(1.1); z-index: 5; }
-        .fp-pos-2 { top: 15%; right: 10%; transform: scale(0.85); z-index: 3; }
-        .fp-pos-3 { bottom: 8%; left: 20%; transform: scale(0.95); z-index: 4; }
-        .fp-pos-4 { bottom: 15%; right: 15%; transform: scale(1); z-index: 4; }
-        
+        .btn-add-cart:hover {
+            background: var(--hc-green-hover);
+        }
+
+        /* Cart Floating Button */
+        .cart-float-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--hc-green);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(14, 74, 53, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--hc-gold);
+            color: var(--hc-green);
+            font-size: 0.75rem;
+            font-weight: 800;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 74, 53, 0.4);
+            z-index: 9999;
+            display: none;
+            justify-content: flex-end;
+        }
+
+        .cart-overlay.active {
+            display: flex;
+        }
+
+        .cart-drawer {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            height: 100%;
+            box-shadow: -10px 0 30px rgba(14, 74, 53, 0.15);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-header h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--hc-green);
+        }
+
+        .cart-items {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .cart-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        .cart-item-info h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .cart-item-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .cart-qty-ctrl {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cart-qty-btn {
+            background: var(--sidebar-bg);
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .cart-qty-val {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--sidebar-bg);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--hc-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 1rem;
+            background: var(--hc-green);
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .btn-checkout:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        /* Order Checkout Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 74, 53, 0.5);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            color: var(--hc-green);
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: var(--sidebar-bg);
+            color: var(--text-main);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--hc-green);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+        }
     </style>
 </head>
-<body>
+<body class="portal-page">
 
+    <!-- Passwordless Customer Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="/img/logo-emerald.png" alt="HenChamp Logo" onerror="this.outerHTML='<i class=\'fas fa-circle-nodes\' style=\'font-size: 3rem; color: var(--hc-green);\'></i>'">
+                <h2>HenChamp Customer Portal</h2>
+            </div>
+            <p>Welcome! Enter your registered customer email address to instantly access your subscription package details, paid logs, and order storefront.</p>
+            <form id="customerLoginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Registered Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="e.g. test@example.com" required>
+                </div>
+                <button type="submit" class="btn-login" id="signInSubmitBtn">Sign In <i class="fas fa-arrow-right"></i></button>
+            </form>
+            <div class="login-help">
+                <small>Demo accounts to log in: <br><code>test@example.com</code> or <code>info@kenyalogistics.com</code></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
     <aside class="luxury-sidebar">
-        <a href="/" class="sidebar-logo">
-            <img src="/img/logo-emerald.png" alt="HenChamp">
+        <a href="/portal" class="sidebar-logo">
+            <img src="/img/logo-emerald.png" alt="HenChamp" onerror="this.outerHTML='<i class=\'fas fa-circle-nodes\' style=\'font-size: 1.5rem; color: var(--hc-green);\'></i>'">
             <div class="logo-text"><strong>HenChamp</strong><br>Solutions</div>
         </a>
+
+        <!-- Logged-in Customer Welcomer -->
+        <div class="customer-welcome">
+            <h4>Account</h4>
+            <p id="portalCustomerName">Loading...</p>
+        </div>
+
         <nav class="sidebar-nav">
-            <a href="/catalogue.html" class="nav-item">DISCOVER</a>
-            <a href="/catalogue.html" class="nav-item">RESEARCH</a>
-            <a href="/catalogue.html" class="nav-item">PIN</a>
-            <a href="/store.html" class="nav-item active">PLAN</a>
-            <a href="/catalogue.html" class="nav-item">COLLABORATE</a>
-            <a href="/catalogue.html" class="nav-item">TRACK</a>
-            <a href="/catalogue.html" class="nav-item">EXPORT</a>
-            <a href="/catalogue.html" class="nav-item">REQUEST</a>
+            <div class="nav-item active" data-tab="planTab">
+                <i class="fas fa-box-open"></i> My Package
+            </div>
+            <div class="nav-item" data-tab="invoicesTab">
+                <i class="fas fa-file-invoice-dollar"></i> Paid Logs
+            </div>
+            <div class="nav-item" data-tab="orderTab">
+                <i class="fas fa-shopping-cart"></i> Storefront
+            </div>
+            
+            <button class="nav-item btn-logout" id="portalLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
         </nav>
     </aside>
 
+    <!-- Main Content Area -->
     <main class="luxury-main">
-        <div class="top-right-icon">
-            <i class="fa-regular fa-bookmark"></i>
+        <div class="main-header">
+            <h1 id="tabTitle">Active Plan details</h1>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: var(--sidebar-bg); padding: 6px 12px; border-radius: 20px;">
+                <i class="fas fa-circle" style="color: #a6ce3a; font-size: 0.6rem; margin-right: 6px;"></i> Live Connected
+            </div>
         </div>
 
-        <div id="featuredGrid">
-            <!-- Dynamically populated -->
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888;">
-                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem;"></i>
+        <!-- Tab 1: Plan/Package Details (C1) -->
+        <div id="planTab" class="tab-content active">
+            <div class="plan-grid">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <span class="plan-badge">Active Plan</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Package Details</span>
+                    </div>
+                    <h2 class="plan-name" id="planName">Loading standard package...</h2>
+                    <p style="margin: 0.5rem 0 1.5rem 0; font-size: 0.9rem; color: var(--text-muted);" id="planQuota">Active subscription allowance and quota</p>
+                    
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Priority warehouse fulfillment</li>
+                        <li><i class="fas fa-check-circle"></i> Flexible payment terms: Net 30 invoices enabled</li>
+                        <li><i class="fas fa-check-circle"></i> Dedicated customer support manager</li>
+                        <li><i class="fas fa-check-circle"></i> Flat rate delivery nationwide</li>
+                    </ul>
+
+                    <div class="plan-price-box">
+                        <div class="plan-price" id="planPrice">Rs 0.00</div>
+                        <div class="plan-price-period">/ <span id="planPeriod">Monthly</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Billing & Invoices History (C1) -->
+        <div id="invoicesTab" class="tab-content">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="portalInvoicesTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading invoice records...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Storefront Order Catalog (C2) -->
+        <div id="orderTab" class="tab-content">
+            <div class="catalog-container">
+                <div class="catalog-header">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="storeSearchInput" placeholder="Search HenChamp catalog products...">
+                    </div>
+                </div>
+                
+                <div class="catalog-grid" id="catalogGrid">
+                    <!-- Loaded dynamically -->
+                </div>
             </div>
         </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('featuredGrid');
-            if (!grid) return;
+    <!-- Floating Cart Button -->
+    <div class="cart-float-btn" id="openCartBtn">
+        <i class="fas fa-shopping-bag"></i>
+        <div class="cart-badge" id="cartCountBadge">0</div>
+    </div>
 
-            const categoryIcons = {
-                'PNS': 'fa-print', 'OEQ': 'fa-desktop', 'UNI': 'fa-tshirt', 'BNE': 'fa-tools',
-                'LNM': 'fa-microscope', 'ICT': 'fa-laptop-code', 'SEC': 'fa-shield-alt',
-                'INT': 'fa-couch', 'PNT': 'fa-paint-roller'
-            };
-            const escapeHtml = (str) => !str ? '' : str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    <!-- Cart Overlay & Slideout Drawer -->
+    <div class="cart-overlay" id="cartDrawerOverlay">
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h3>Shopping Cart</h3>
+                <button id="closeCartBtn" style="font-size: 1.5rem; color: var(--text-muted);">&times;</button>
+            </div>
+            <div class="cart-items" id="cartDrawerBody">
+                <p style="text-align: center; color: var(--text-muted); padding: 3rem 0;">Your cart is empty.</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total-row">
+                    <span>Total Cost:</span>
+                    <span id="cartGrandTotal">Rs 0.00</span>
+                </div>
+                <button class="btn-checkout" id="checkoutProceedBtn" disabled>Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
 
-            try {
-                const res = await fetch('/api/config/public-items');
-                const data = await res.json();
-                if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
-                    grid.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">No items found.</div>';
-                    return;
-                }
-                
-                const featured = data.data.slice(0, 5); // Take up to 5 items to mimic scattered layout
-                grid.innerHTML = featured.map((item, index) => {
-                    const catPrefix = item.code ? item.code.split('-')[0] : 'PKG';
-                    const iconClass = categoryIcons[catPrefix] || 'fa-box-open';
-                    
-                    return \`
-                        <a href="/catalogue.html?cat=\${catPrefix}" class="floating-product fp-pos-\${index}">
-                            <div class="fp-image">
-                                <i class="fas \${iconClass}"></i>
-                            </div>
-                            <div class="fp-footer">
-                                <div class="fp-info">
-                                    <div class="fp-title">\${escapeHtml(item.name).substring(0, 20)}</div>
-                                    <div class="fp-subtitle">LOOK \${index + 1}</div>
-                                </div>
-                                <div class="fp-badge">UNREQUESTED <i class="fas fa-chevron-down"></i></div>
-                            </div>
-                        </a>
-                    \`;
-                }).join('');
-            } catch (err) {
-                grid.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">Error loading items.</div>';
-            }
-        });
-    </script>
+    <!-- Checkout Modal Dialog -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Order Details</h3>
+                <button id="closeCheckoutBtn" style="font-size: 1.25rem;">&times;</button>
+            </div>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Recipient Delivery Contact Name</label>
+                    <input type="text" id="custName" placeholder="Enter recipient name" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Phone Number</label>
+                    <input type="text" id="custPhone" placeholder="Enter phone number" required>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Payment Method</label>
+                    <select id="paymentMethod" class="form-control">
+                        <option value="credit">On Account (Net 30 Invoice)</option>
+                        <option value="cash">Cash on Delivery</option>
+                        <option value="mpesa">Card / Mobile Money Pay</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelCheckoutBtn">Cancel</button>
+                    <button type="submit" class="btn-primary" id="submitOrderBtn">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Core App Logic Script -->
+    <script type="module" src="./js/portal.js"></script>
 </body>
 </html>
