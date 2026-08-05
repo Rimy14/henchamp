@@ -32,8 +32,7 @@ router.get('/:id', getQuotationById);
 router.post('/', checkPermission('quotations:create'), createQuotation);
 
 /**
- * Update quotation details (Admin only, reusing create permission for now or specific if available)
- * Typically edits are restricted to creators or admins.
+ * Update quotation details
  */
 router.put('/:id', checkPermission('quotations:create'), updateQuotation);
 
