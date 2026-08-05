@@ -11,7 +11,14 @@
     "db:import": "node scripts/import_db.js",
     "db:reset": "node scripts/reset_and_import_db.js",
     "grant:admin": "node scripts/grant_admin_all_permissions.js",
-    "update:prices": "node scripts/update_item_selling_prices.js"
+    "update:prices": "node scripts/update_item_selling_prices.js",
+    "isp:migrate": "node scripts/isp/run_isp_migrations.js",
+    "isp:verify-db": "node scripts/isp/run_isp_migrations.js --verify",
+    "isp:seed": "node scripts/isp/seed_isp_demo.js",
+    "isp:seed:reset": "node scripts/isp/seed_isp_demo.js --reset",
+    "isp:simulate": "node scripts/isp/simulate_radius_session.js",
+    "isp:verify": "node scripts/isp/verify_isp_api.js",
+    "isp:test": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/isp-*.test.js --forceExit"
   },
   "keywords": [
     "pos",
