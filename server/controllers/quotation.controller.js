@@ -407,6 +407,26 @@ export async function updateQuotationStatus(req, res) {
 }
 
 /**
+ * Delete quotation (only if Draft)
+ */
+export async function deleteQuotation(req, res) {
+    try {
+        const { id } = req.params;
+
+        // Check if quotation exists and is in Draft status
+        const quotations = await query('SELECT * FROM quotations WHERE id = ?', [id]);
+        if (quotations.length === 0) {
+            return res.status(404).json({ success: false, message: 'Quotation not found' });
+        }
+
+        const quotation = quotations[0];
+        if (quotation.status !== 'Draft') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only draft quotations can be deleted'
+            });
+        }
+
         // Delete quotation (items will be deleted by CASCADE)
         await query('DELETE FROM quotations WHERE id = ?', [id]);
 
