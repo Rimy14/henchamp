@@ -1,0 +1,90 @@
+<!-- ISP Dashboard (A7) — overview of subscribers, vouchers, sessions and usage -->
+
+<div class="page-actions">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <button id="ispRefreshBtn" class="btn btn-secondary">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+        <span id="ispLastUpdated" class="text-muted" style="font-size: 0.85rem;"></span>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <button id="ispRunIngestBtn" class="btn btn-secondary" title="Pull new RADIUS accounting data now">
+            <i class="fas fa-download"></i> Run Accounting Ingest
+        </button>
+        <button id="ispRunReaperBtn" class="btn btn-secondary" title="Close sessions that stopped reporting">
+            <i class="fas fa-broom"></i> Reap Stale Sessions
+        </button>
+    </div>
+</div>
+
+<!-- Summary tiles -->
+<div class="stats-grid" id="ispStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+    <div class="stat-card">
+        <div class="stat-label">Active Subscribers</div>
+        <div class="stat-value" id="statActiveSubs">–</div>
+        <div class="stat-sub" id="statSubsBreakdown"></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Sessions Online</div>
+        <div class="stat-value" id="statOpenSessions">–</div>
+        <div class="stat-sub">from accounting</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Data Today</div>
+        <div class="stat-value" id="statUsageToday">–</div>
+        <div class="stat-sub" id="statUsageSplit"></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Vouchers</div>
+        <div class="stat-value" id="statVouchers">–</div>
+        <div class="stat-sub" id="statVoucherBreakdown"></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Routers</div>
+        <div class="stat-value" id="statNas">–</div>
+        <div class="stat-sub" id="statNasErrors"></div>
+    </div>
+</div>
+
+<!-- Background job health -->
+<div class="table-container" style="margin-bottom: 1.5rem;">
+    <h3 style="padding: 1rem 1rem 0;">Background Jobs</h3>
+    <p class="text-muted" style="padding: 0 1rem; font-size: 0.85rem;">
+        Accounting ingest feeds usage tracking. If it stops, usage figures silently stop updating.
+    </p>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Job</th>
+                <th>Last Run</th>
+                <th>Status</th>
+                <th>Cursor</th>
+                <th>Last Error</th>
+            </tr>
+        </thead>
+        <tbody id="ispJobsBody">
+            <tr><td colspan="5" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Top talkers -->
+<div class="table-container">
+    <h3 style="padding: 1rem 1rem 0;">Heaviest Users (last 7 days)</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Subscriber</th>
+                <th>Package</th>
+                <th>Status</th>
+                <th>Upload</th>
+                <th>Download</th>
+                <th>Total</th>
+                <th>Time Online</th>
+            </tr>
+        </thead>
+        <tbody id="ispTopTalkersBody">
+            <tr><td colspan="7" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>
