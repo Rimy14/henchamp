@@ -210,6 +210,39 @@ class AppShell {
             allowedRoles: ['Admin']
         });
 
+        // --- ISP module (Section A) -------------------------------------
+        router.addRoute('/isp', {
+            title: 'ISP Dashboard',
+            view: '/pages/isp-dashboard.html',
+            script: '/js/pages/isp-dashboard.js',
+            init: 'initIspDashboard',
+            allowedRoles: ['Admin', 'Coordinator', 'Cashier']
+        });
+
+        router.addRoute('/isp/subscribers', {
+            title: 'ISP Subscribers',
+            view: '/pages/isp-subscribers.html',
+            script: '/js/pages/isp-subscribers.js',
+            init: 'initIspSubscribers',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
+        router.addRoute('/isp/vouchers', {
+            title: 'Hotspot Vouchers',
+            view: '/pages/isp-vouchers.html',
+            script: '/js/pages/isp-vouchers.js',
+            init: 'initIspVouchers',
+            allowedRoles: ['Admin', 'Coordinator', 'Cashier']
+        });
+
+        router.addRoute('/isp/sessions', {
+            title: 'Live Sessions',
+            view: '/pages/isp-sessions.html',
+            script: '/js/pages/isp-sessions.js',
+            init: 'initIspSessions',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
         router.addRoute('/suppliers', {
             title: 'Suppliers',
             view: '/pages/suppliers.html',

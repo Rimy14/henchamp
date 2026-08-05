@@ -1,0 +1,74 @@
+<!-- ISP Sessions (A6) — live sessions from routers vs. accounting projection -->
+
+<div class="page-actions">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <button id="ispSessRefreshBtn" class="btn btn-secondary">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+        <label style="display: flex; align-items: center; gap: 0.4rem; margin: 0;">
+            <input type="checkbox" id="ispSessAutoRefresh"> Auto-refresh (15s)
+        </label>
+        <span id="ispSessUpdated" class="text-muted" style="font-size: 0.85rem;"></span>
+    </div>
+</div>
+
+<!-- Why there are two tables -->
+<div class="alert alert-info" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-left: 4px solid #2196f3; background: rgba(33,150,243,0.08);">
+    <small>
+        <strong>Two views, and they can legitimately disagree.</strong>
+        <em>Live on routers</em> is ground truth, but needs the routers reachable.
+        <em>Accounting</em> always answers, but lags by one interim-update interval and can
+        hold stale rows if a router died without sending Accounting-Stop. A row in
+        accounting with no matching router session is exactly what the reaper cleans up.
+    </small>
+</div>
+
+<!-- Live from routers -->
+<div class="table-container" style="margin-bottom: 1.5rem;">
+    <h3 style="padding: 1rem 1rem 0;">
+        Live on Routers
+        <span id="ispLiveCount" class="badge badge-secondary"></span>
+    </h3>
+    <div id="ispLiveWarning" style="padding: 0 1rem;"></div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Service</th>
+                <th>IP</th>
+                <th>MAC</th>
+                <th>Uptime</th>
+                <th>Router</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ispLiveSessionsBody">
+            <tr><td colspan="7" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- From accounting -->
+<div class="table-container">
+    <h3 style="padding: 1rem 1rem 0;">
+        Open per Accounting
+        <span id="ispOpenCount" class="badge badge-secondary"></span>
+    </h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Identity</th>
+                <th>IP</th>
+                <th>MAC</th>
+                <th>Started</th>
+                <th>Last Update</th>
+                <th>↑ Upload</th>
+                <th>↓ Download</th>
+            </tr>
+        </thead>
+        <tbody id="ispOpenSessionsBody">
+            <tr><td colspan="8" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>

@@ -15,7 +15,11 @@ const pool = mysql.createPool({
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,
-    timezone: '+05:30' // Asia/Colombo timezone (UTC+5:30)
+    // HenChamp operates in Kenya (EAT, UTC+3). This was previously hardcoded
+    // to +05:30 (Asia/Colombo) from the project this codebase was forked
+    // from, which shifted every billing boundary, voucher expiry and session
+    // timestamp by 2.5 hours.
+    timezone: process.env.DB_TIMEZONE || '+03:00'
 });
 
 // Test database connection
