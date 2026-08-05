@@ -7,6 +7,7 @@
  *   session-reaper     close sessions that stopped reporting
  *   voucher-expiry     expire vouchers past validity window
  *   billing-cycle      generate recurring ISP subscription invoices (B1)
+ *   billing-lifecycle  overdue/grace/suspension handling (B2)
  *
  * Deliberately uses setInterval instead of cron.
  *
@@ -15,10 +16,12 @@
  * move these jobs behind a lock/queue system.
  */
 
+
 import logger from '../utils/logger.js';
 
 import * as accounting from '../services/isp/accounting.service.js';
 import * as voucherService from '../services/isp/voucher.service.js';
+
 
 import {
     runBillingCycle
@@ -26,28 +29,39 @@ import {
 from '../services/billing/billing.service.js';
 
 
+import {
+    runBillingLifecycle
+}
+from '../services/billing/lifecycle.job.js';
+
+
+
 const timers = [];
 
 let running = false;
 
 
-/**
- * Wrap a job so failures do not crash the server.
- */
-function guard(name, fn) {
 
-    return async () => {
+function guard(name, fn){
+
+    return async()=>{
 
         const started = Date.now();
 
-        try {
 
-            const result = await fn();
+        try{
 
-            const ms = Date.now() - started;
+            const result =
+                await fn();
 
 
-            if (result && hasWork(result)) {
+            const ms =
+                Date.now()-started;
+
+
+
+            if(result && hasWork(result)){
+
 
                 logger.info(
                     `ISP job "${name}" completed`,
@@ -57,8 +71,10 @@ function guard(name, fn) {
                     }
                 );
 
+
             }
-            else {
+            else{
+
 
                 logger.debug(
                     `ISP job "${name}" idle`,
@@ -73,19 +89,23 @@ function guard(name, fn) {
         }
         catch(error){
 
+
             logger.error(
                 `ISP job "${name}" failed`,
                 {
-                    error: error.message,
-                    stack: error.stack
+                    error:error.message,
+                    stack:error.stack
                 }
             );
 
         }
 
+
     };
 
+
 }
+
 
 
 
@@ -94,12 +114,14 @@ function hasWork(result){
 
     return Object.entries(result)
         .some(
-            ([key,value]) =>
+            ([key,value])=>
+
                 key !== 'watermark'
                 &&
                 typeof value === 'number'
                 &&
                 value > 0
+
         );
 
 }
@@ -107,16 +129,17 @@ function hasWork(result){
 
 
 
-/**
- * Register interval and run once after startup delay.
- */
+
 function schedule(
     name,
     intervalMs,
     fn
 ){
 
-    const job = guard(name, fn);
+
+    const job =
+        guard(name,fn);
+
 
 
     const kickoff =
@@ -126,6 +149,7 @@ function schedule(
         );
 
 
+
     const timer =
         setInterval(
             job,
@@ -133,14 +157,14 @@ function schedule(
         );
 
 
-    if(typeof timer.unref === 'function'){
+
+    if(typeof timer.unref==='function')
         timer.unref();
-    }
 
 
-    if(typeof kickoff.unref === 'function'){
+    if(typeof kickoff.unref==='function')
         kickoff.unref();
-    }
+
 
 
     timers.push(
@@ -149,10 +173,11 @@ function schedule(
     );
 
 
+
     logger.info(
         `ISP job "${name}" scheduled`,
         {
-            everyMs: intervalMs
+            everyMs:intervalMs
         }
     );
 
@@ -162,17 +187,16 @@ function schedule(
 
 
 
-/**
- * Start all ISP background jobs.
- */
 export function startIspJobs(){
 
 
     if(process.env.ISP_JOBS_ENABLED !== 'true'){
 
+
         logger.info(
             'ISP background jobs disabled (set ISP_JOBS_ENABLED=true to enable)'
         );
+
 
         return false;
 
@@ -185,6 +209,7 @@ export function startIspJobs(){
         logger.warn(
             'ISP background jobs already running'
         );
+
 
         return false;
 
@@ -208,18 +233,17 @@ export function startIspJobs(){
 
 
 
-    /**
-     * B1 Recurring billing.
-     *
-     * Default:
-     * 24 hours
-     *
-     * For testing:
-     * ISP_BILLING_INTERVAL_MS=10000
-     */
     const billingInterval =
         parseInt(
             process.env.ISP_BILLING_INTERVAL_MS || '86400000',
+            10
+        );
+
+
+
+    const lifecycleInterval =
+        parseInt(
+            process.env.ISP_LIFECYCLE_INTERVAL_MS || '3600000',
             10
         );
 
@@ -253,16 +277,27 @@ export function startIspJobs(){
 
 
 
+    // B1
     schedule(
         'billing-cycle',
         billingInterval,
-        async () =>
+        () =>
             runBillingCycle()
     );
 
 
 
-    running = true;
+    // B2
+    schedule(
+        'billing-lifecycle',
+        lifecycleInterval,
+        () =>
+            runBillingLifecycle()
+    );
+
+
+
+    running=true;
 
 
     return true;
@@ -273,10 +308,6 @@ export function startIspJobs(){
 
 
 
-/**
- * Stop jobs.
- * Used during tests and graceful shutdown.
- */
 export function stopIspJobs(){
 
 
@@ -288,10 +319,10 @@ export function stopIspJobs(){
     }
 
 
-    timers.length = 0;
+    timers.length=0;
 
 
-    running = false;
+    running=false;
 
 
     logger.info(

@@ -10,7 +10,10 @@
 
 
 import { query, transaction } from '../../config/database.js';
-
+import {
+    restoreSubscriber
+}
+from '../isp/lifecycle.service.js';
 
 
 export async function createISPInvoice({
@@ -108,7 +111,9 @@ export async function markInvoicePaid(
 
     await transaction(async(conn)=>{
 
+
         // 1. Complete POS invoice
+
         await conn.execute(
         `
         UPDATE sales
@@ -123,7 +128,9 @@ export async function markInvoicePaid(
         );
 
 
-        // 2. Add payment record
+
+        // 2. Create payment record
+
         await conn.execute(
         `
         INSERT INTO sale_payments
@@ -150,12 +157,32 @@ export async function markInvoicePaid(
         );
 
 
-        // 3. Mark ISP subscription as paid
-        await conn.execute(
+
+    });
+
+
+
+    /*
+        B2 restore flow
+
+        Payment received
+              |
+              ↓
+        restoreSubscriber()
+              |
+              ↓
+        RADIUS unblock
+              |
+              ↓
+        subscriber active
+    */
+
+
+    const subscriptions =
+        await query(
         `
-        UPDATE isp_subscriptions
-        SET
-            status='paid'
+        SELECT subscriber_id
+        FROM isp_subscriptions
         WHERE invoice_ref =
         (
             SELECT invoice_number
@@ -169,6 +196,19 @@ export async function markInvoicePaid(
         );
 
 
-    });
+
+    for(const subscription of subscriptions){
+
+
+        await restoreSubscriber(
+            subscription.subscriber_id,
+            {
+                reason:'payment received'
+            }
+        );
+
+
+    }
+
 
 }
