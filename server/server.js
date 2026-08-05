@@ -43,6 +43,7 @@ import qzRoutes from './routes/qz.routes.js';
 import configRoutes from './routes/config.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import roleRoutes from './routes/role.routes.js';
+import ispRoutes from './routes/isp.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -191,6 +192,9 @@ app.use('/api/petty-cash', pettyCashRoutes);
 app.use('/api/monthly-costs', monthlyCostsRoutes);
 app.use('/api/roles', roleRoutes);
 
+// ISP module routes (Section A: hotspot, PPPoE, RADIUS, vouchers, usage)
+app.use('/api/isp', ispRoutes);
+
 
 // QZ Tray routes - mount at both /qz (for certificate) and /api/qz (for signing)
 app.use('/qz', qzRoutes);  // For certificate: /qz/digital-certificate.txt
@@ -230,6 +234,8 @@ app.use(errorHandler);
 
 import { migrateMonthlyCostCategories } from '../scripts/create_monthly_cost_categories_table.js';
 import { migrateItemTax } from '../scripts/migrate_item_tax.js';
+import { testRadiusConnection } from './config/radius-db.js';
+import { startIspJobs } from './jobs/isp-jobs.js';
 
 const startServer = async () => {
     try {
@@ -243,6 +249,20 @@ const startServer = async () => {
         // Run migrations
         await migrateMonthlyCostCategories();
         await migrateItemTax();
+
+        // ISP module: the RADIUS database is a separate schema shared with
+        // FreeRADIUS. A failure here is NOT fatal — the POS and store must
+        // keep working even when the ISP side is misconfigured. ISP endpoints
+        // will report the error themselves.
+        const radiusConnected = await testRadiusConnection();
+        if (radiusConnected) {
+            startIspJobs();
+        } else {
+            logger.warn(
+                'ISP module degraded: RADIUS database unavailable. ' +
+                'Run "node scripts/isp/run_isp_migrations.js" to set it up.'
+            );
+        }
 
         // Start server
         app.listen(PORT, () => {
