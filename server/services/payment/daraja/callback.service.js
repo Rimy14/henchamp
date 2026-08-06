@@ -8,16 +8,16 @@
  * Daraja Callback
  *        |
  *        v
- * isp_payments
+ * payments table
  *        |
  *        v
- * sales invoice
+ * payment-handler.service.js
  *        |
- *        v
- * ISP subscription
- *        |
- *        v
- * Subscriber restore
+ *        +----------------+
+ *        |                |
+ *        v                v
+ *      ISP Billing     Ticketing
+ *
  */
 
 
@@ -27,160 +27,254 @@ import {
 from '../../../config/database.js';
 
 
-import {
-    markInvoicePaid
-}
-from '../../billing/invoice.service.js';
-
 
 import {
-    restoreSubscriber
+    handleSuccessfulPayment
 }
-from '../../isp/lifecycle.service.js';
+from '../payment-handler.service.js';
+
 
 
 
 export async function processMpesaCallback(data){
 
 
-    const {
-
-        CheckoutRequestID,
-
-        ResultCode,
-
-        MpesaReceiptNumber
+    try{
 
 
-    } = data;
-
-
-
-    const payments =
-    await query(
-        `
-        SELECT *
-        FROM isp_payments
-        WHERE checkout_request_id=?
-        `,
-        [
-            CheckoutRequestID
-        ]
-    );
-
-
-
-    if(!payments.length){
-
-        throw new Error(
-            "Payment record not found"
+        console.log(
+            "M-Pesa callback received",
+            JSON.stringify(data)
         );
 
-    }
+
+
+        const callback =
+            data?.Body?.stkCallback;
 
 
 
-    const payment =
-    payments[0];
+        if(!callback){
+
+            throw new Error(
+                "Invalid M-Pesa callback"
+            );
+
+        }
 
 
 
-    /**
-     * Duplicate callback protection
-     *
-     * Safaricom can resend callbacks.
-     */
-    if(payment.status === 'success'){
+        const {
+
+            CheckoutRequestID,
+
+            ResultCode
+
+        } = callback;
+
+
+
+
+        let MpesaReceiptNumber = null;
+
+
+
+        if(callback.CallbackMetadata?.Item){
+
+
+            const receipt =
+            callback.CallbackMetadata.Item.find(
+                item =>
+                item.Name === "MpesaReceiptNumber"
+            );
+
+
+            MpesaReceiptNumber =
+                receipt?.Value || null;
+
+
+        }
+
+
+
+
+        const payments =
+        await query(
+            `
+            SELECT *
+            FROM payments
+            WHERE checkout_request_id=?
+            LIMIT 1
+            `,
+            [
+                CheckoutRequestID
+            ]
+        );
+
+
+
+        if(!payments.length){
+
+
+            throw new Error(
+                "Payment record not found"
+            );
+
+        }
+
+
+
+        const payment =
+            payments[0];
+
+
+
+
+        /**
+         * Prevent duplicate callbacks
+         */
+
+        if(payment.status === 'success'){
+
+
+            return {
+
+                success:true,
+
+                message:
+                "Payment already processed"
+
+            };
+
+        }
+
+
+
+
+
+        /**
+         * Successful payment
+         */
+
+        if(ResultCode === 0){
+
+
+
+            await query(
+                `
+                UPDATE payments
+                SET
+                    status='success',
+                    mpesa_receipt=?
+                WHERE id=?
+                `,
+                [
+
+                    MpesaReceiptNumber,
+
+                    payment.id
+
+                ]
+            );
+
+
+            console.log(
+                "Sending payment to handler:",
+                 payment
+                );
+
+            /**
+             * Send to business module
+             *
+             * ISP:
+             *   invoice paid
+             *   subscriber restored
+             *
+             * Ticket:
+             *   ticket activated
+             */
+
+            await handleSuccessfulPayment(
+
+                {
+                    id: payment.id,
+
+                    ...payment,
+
+                    status:'success',
+
+                    mpesa_receipt:
+                    MpesaReceiptNumber
+
+                }
+
+            );
+
+
+
+
+            console.log(
+                "M-Pesa payment completed:",
+                payment.id
+            );
+
+
+
+        }
+
+        else {
+
+
+
+            await query(
+                `
+                UPDATE payments
+                SET
+                    status='failed'
+                WHERE id=?
+                `,
+                [
+
+                    payment.id
+
+                ]
+            );
+
+
+
+            console.log(
+                "M-Pesa payment failed:",
+                payment.id
+            );
+
+
+        }
+
+
+
 
         return {
 
-            success:true,
-
-            message:
-            "Payment already processed"
+            success:
+            ResultCode === 0
 
         };
 
-    }
-
-
-
-    if(ResultCode === 0){
-
-
-
-        await query(
-            `
-            UPDATE isp_payments
-            SET
-                status='success',
-                mpesa_receipt=?
-            WHERE id=?
-            `,
-            [
-
-                MpesaReceiptNumber,
-
-                payment.id
-
-            ]
-        );
-
-
-
-        await markInvoicePaid(
-
-            payment.sale_id,
-
-            MpesaReceiptNumber
-
-        );
-
-
-
-        await restoreSubscriber(
-
-            payment.subscriber_id
-
-        );
-
 
 
     }
-    else {
+    catch(error){
 
 
-
-        await query(
-            `
-            UPDATE isp_payments
-            SET
-                status='failed',
-                response_message=?
-            WHERE id=?
-            `,
-            [
-
-                "Payment failed",
-
-                payment.id
-
-            ]
+        console.error(
+            "M-Pesa callback error:",
+            error
         );
 
 
+        throw error;
+
     }
-
-
-
-    return {
-
-
-        success:
-        ResultCode === 0
-
-
-    };
 
 
 }

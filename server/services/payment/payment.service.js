@@ -23,9 +23,29 @@ export async function createMpesaPayment({
 
     invoiceNumber
 
-
 }){
 
+
+    /**
+     * Common payment reference
+     *
+     * Used across:
+     *
+     * ISP
+     * Ticketing
+     * Store
+     */
+
+    const reference =
+        invoiceNumber ||
+        `ISP-${Date.now()}`;
+
+
+
+
+    /**
+     * Create Daraja STK Push
+     */
 
     const response =
     await sendSTKPush({
@@ -34,11 +54,76 @@ export async function createMpesaPayment({
 
         amount,
 
-        invoiceNumber
+        invoiceNumber:reference
 
     });
 
 
+
+
+
+    /**
+     * COMMON PAYMENT LEDGER
+     *
+     * Every system uses this table:
+     *
+     * ISP
+     * TICKETS
+     * STORE
+     */
+
+    await query(
+        `
+        INSERT INTO payments
+        (
+            provider,
+            purpose,
+            reference,
+            amount,
+            phone,
+            status,
+            checkout_request_id
+        )
+
+        VALUES
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        `,
+        [
+
+            'DARAJA',
+
+            'ISP',
+
+            reference,
+
+            amount,
+
+            phone,
+
+            'pending',
+
+            response.checkoutRequestId
+
+        ]
+    );
+
+
+
+
+
+    /**
+     * ISP SPECIFIC PAYMENT
+     *
+     * Keeps subscriber billing relation
+     */
 
     await query(
         `
@@ -49,11 +134,20 @@ export async function createMpesaPayment({
             checkout_request_id,
             merchant_request_id,
             phone,
-            amount
+            amount,
+            status
         )
 
         VALUES
-        (?,?,?,?,?,?)
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
         `,
         [
 
@@ -67,14 +161,27 @@ export async function createMpesaPayment({
 
             phone,
 
-            amount
+            amount,
+
+            'pending'
 
         ]
     );
 
 
 
-    return response;
+
+
+    return {
+
+        success:true,
+
+        reference,
+
+        checkoutRequestId:
+        response.checkoutRequestId
+
+    };
 
 
 }

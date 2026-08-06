@@ -45,6 +45,8 @@ import notificationRoutes from './routes/notification.routes.js';
 import roleRoutes from './routes/role.routes.js';
 import ispRoutes from './routes/isp.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
+import ticketRoutes from './routes/ticket.routes.js';
+import ticketPaymentRoutes from './routes/ticket-payment.routes.js';
 
 
 // Load environment variables
@@ -200,7 +202,18 @@ app.use('/api/isp', ispRoutes);
 
 // Payment routes
 // M-Pesa, Paystack, POS, payment history
+// Ticketing platform routes
+// Payment routes
+// M-Pesa, Paystack, POS, payment history
 app.use('/api/payment', paymentRoutes);
+
+
+// Ticketing platform (E1 - Daraja reusable integration)
+app.use('/api/tickets', ticketRoutes);
+
+
+// Ticket payment integration
+app.use('/api/ticket-payment', ticketPaymentRoutes);
 
 
 // QZ Tray routes - mount at both /qz (for certificate) and /api/qz (for signing)
