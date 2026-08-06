@@ -3,252 +3,42 @@ import express from 'express';
 
 import {
     createMpesaPayment
-}
-from '../services/payment/payment.service.js';
+} from '../services/payment/payment.service.js';
 
 
 import {
     processMpesaCallback
-}
-from '../services/payment/daraja/callback.service.js';
-
-
-
-import {
-    createPaystackPayment
-}
-from '../services/payment/paystack/transaction.service.js';
-
-
-
-import {
-    processPaystackWebhook
-}
-from '../services/payment/paystack/webhook.service.js';
-
-
-
-import {
-    createPOSTransaction
-}
-from '../services/payment/pos/transaction.service.js';
-
-
-
-import {
-    processPOSWebhook
-}
-from '../services/payment/pos/webhook.service.js';
-
-
-
-const router = express.Router();
-
-
-
-
-// =======================
-// DARAJA M-PESA
-// =======================
-
-
-router.post(
-    '/mpesa/stk',
-    async(req,res)=>{
-
-        const result =
-        await createMpesaPayment(
-            req.body
-        );
-
-
-        res.json(result);
-
-    }
-);
-
-
-
-router.post(
-    '/mpesa/callback',
-    async(req,res)=>{
-
-
-        await processMpesaCallback(
-            req.body
-        );
-
-
-        res.json({
-
-            ResultCode:0,
-
-            ResultDesc:"Accepted"
-
-        });
-
-    }
-);
-
-
-
-
-
-// =======================
-// PAYSTACK CARD PAYMENT
-// =======================
-
-
-router.post(
-    '/paystack/initiate',
-    async(req,res)=>{
-
-
-        const result =
-        await createPaystackPayment(
-            req.body
-        );
-
-
-        res.json(result);
-
-    }
-);
-
-
-
-router.post(
-    '/paystack/webhook',
-    async(req,res)=>{
-
-
-        const result =
-        await processPaystackWebhook(
-            req.body
-        );
-
-
-        res.json(result);
-
-    }
-);
-
-
-
-
-
-
-// =======================
-// FUTURE POS TERMINAL
-// =======================
-// 
-// Used when a physical card terminal
-// is connected in future.
-//
-// Flow:
-//
-// POS Machine
-//      |
-//      ↓
-// /pos/create
-//      |
-//      ↓
-// isp_payments
-//      |
-//      ↓
-// /pos/webhook
-//      |
-//      ↓
-// Invoice Paid
-// Subscriber Activated
-//
-
-
-router.post(
-    '/pos/create',
-    async(req,res)=>{
-
-
-        const result =
-        await createPOSTransaction(
-            req.body
-        );
-
-
-        res.json(result);
-
-    }
-);
-
-
-
-router.post(
-    '/pos/webhook',
-    async(req,res)=>{
-
-
-        const result =
-        await processPOSWebhook(
-            req.body
-        );
-
-
-        res.json(result);
-
-    }
-);
-
-
-
-
-export default router;import express from 'express';
-
-
-import {
-    createMpesaPayment
-}
-from '../services/payment/payment.service.js';
-
-
-import {
-    processMpesaCallback
-}
-from '../services/payment/daraja/callback.service.js';
-
+} from '../services/payment/daraja/callback.service.js';
 
 
 import {
     createDarajaPayment
-}
-from '../services/payment/daraja/daraja.service.js';
-
+} from '../services/payment/daraja/daraja.service.js';
 
 
 import {
     createPaystackPayment
-}
-from '../services/payment/paystack/transaction.service.js';
-
+} from '../services/payment/paystack/transaction.service.js';
 
 
 import {
     processPaystackWebhook
-}
-from '../services/payment/paystack/webhook.service.js';
-
+} from '../services/payment/paystack/webhook.service.js';
 
 
 import {
     createPOSTransaction
-}
-from '../services/payment/pos/transaction.service.js';
-
+} from '../services/payment/pos/transaction.service.js';
 
 
 import {
     processPOSWebhook
-}
-from '../services/payment/pos/webhook.service.js';
+} from '../services/payment/pos/webhook.service.js';
+
+
+import {
+    query
+} from '../config/database.js';
 
 
 
@@ -256,48 +46,86 @@ const router = express.Router();
 
 
 
-
-
-// =======================
-// DARAJA M-PESA ISP
-// =======================
-
+// =====================================================
+// M-PESA ISP STK PUSH
+// =====================================================
 
 router.post(
     '/mpesa/stk',
-    async(req,res)=>{
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await createMpesaPayment(
+                    req.body
+                );
 
 
-        const result =
-        await createMpesaPayment(
-            req.body
-        );
+            res.json(result);
 
 
-        res.json(result);
+        } catch(error) {
+
+            console.error(
+                'M-Pesa STK error:',
+                error
+            );
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
 
 
+
+
+// =====================================================
+// M-PESA CALLBACK
+// =====================================================
 
 router.post(
     '/mpesa/callback',
     async(req,res)=>{
 
-
-        await processMpesaCallback(
-            req.body
-        );
+        try {
 
 
-        res.json({
+            await processMpesaCallback(
+                req.body
+            );
 
-            ResultCode:0,
 
-            ResultDesc:"Accepted"
+            res.json({
 
-        });
+                ResultCode:0,
+
+                ResultDesc:"Accepted"
+
+            });
+
+
+        } catch(error){
+
+
+            console.error(
+                'M-Pesa callback error:',
+                error
+            );
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
@@ -306,31 +134,33 @@ router.post(
 
 
 
-
-// =======================
-// REUSABLE DARAJA API
-// =======================
-//
-// Used by:
-// - ISP Billing
-// - Ticketing platform
-// - Other client systems
-//
-// Generic M-Pesa STK Push
-//
+// =====================================================
+// GENERIC DARAJA STK
+// =====================================================
 
 router.post(
     '/daraja/stk',
     async(req,res)=>{
 
+        try {
 
-        const result =
-        await createDarajaPayment(
-            req.body
-        );
+            const result =
+                await createDarajaPayment(
+                    req.body
+                );
 
 
-        res.json(result);
+            res.json(result);
+
+
+        } catch(error){
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
@@ -339,28 +169,40 @@ router.post(
 
 
 
-
-
-// =======================
-// PAYSTACK CARD PAYMENT
-// =======================
-
+// =====================================================
+// PAYSTACK
+// =====================================================
 
 router.post(
     '/paystack/initiate',
     async(req,res)=>{
 
-
-        const result =
-        await createPaystackPayment(
-            req.body
-        );
+        try {
 
 
-        res.json(result);
+            const result =
+                await createPaystackPayment(
+                    req.body
+                );
+
+
+            res.json(result);
+
+
+        } catch(error){
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
+
+
 
 
 
@@ -368,14 +210,27 @@ router.post(
     '/paystack/webhook',
     async(req,res)=>{
 
-
-        const result =
-        await processPaystackWebhook(
-            req.body
-        );
+        try {
 
 
-        res.json(result);
+            const result =
+                await processPaystackWebhook(
+                    req.body
+                );
+
+
+            res.json(result);
+
+
+        } catch(error){
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
@@ -386,27 +241,41 @@ router.post(
 
 
 
-
-// =======================
-// FUTURE POS TERMINAL
-// =======================
-
+// =====================================================
+// POS TERMINAL
+// =====================================================
 
 router.post(
     '/pos/create',
     async(req,res)=>{
 
-
-        const result =
-        await createPOSTransaction(
-            req.body
-        );
+        try {
 
 
-        res.json(result);
+            const result =
+                await createPOSTransaction(
+                    req.body
+                );
+
+
+            res.json(result);
+
+
+        } catch(error){
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
+
+
+
 
 
 
@@ -414,17 +283,98 @@ router.post(
     '/pos/webhook',
     async(req,res)=>{
 
-
-        const result =
-        await processPOSWebhook(
-            req.body
-        );
+        try {
 
 
-        res.json(result);
+            const result =
+                await processPOSWebhook(
+                    req.body
+                );
+
+
+            res.json(result);
+
+
+        } catch(error){
+
+
+            res.status(500).json({
+                success:false,
+                message:error.message
+            });
+
+        }
 
     }
 );
+
+
+
+
+
+
+
+// =====================================================
+// PAYMENT HISTORY
+// =====================================================
+
+router.get(
+    '/isp',
+    async(req,res)=>{
+
+        try {
+
+
+            const rows =
+                await query(
+                `
+                SELECT
+                    id,
+                    payment_provider,
+                    transaction_reference,
+                    checkout_request_id,
+                    amount,
+                    status,
+                    created_at
+                FROM isp_payments
+                ORDER BY id DESC
+                LIMIT 50
+                `
+                );
+
+
+            res.json({
+
+                success:true,
+
+                data:rows
+
+            });
+
+
+        } catch(error){
+
+
+            console.error(
+                'Payment history error:',
+                error
+            );
+
+
+            res.status(500).json({
+
+                success:false,
+
+                message:error.message
+
+            });
+
+        }
+
+    }
+);
+
+
 
 
 

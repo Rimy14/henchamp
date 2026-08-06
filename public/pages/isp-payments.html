@@ -9,5 +9,108 @@
 
 <div class="page-body">
     <h2>ISP Payments</h2>
-    <p class="text-muted">Track ISP payments and invoices in this workspace.</p>
+    <p class="text-muted">Collect payments for ISP invoices. Choose a method and follow the prompts.</p>
+
+    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <!-- M-Pesa STK Push -->
+        <div class="card">
+            <div class="card-header"><strong>M-Pesa Payment (STK Push)</strong></div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Subscriber ID</label>
+                    <input id="mpSubId" class="form-control" placeholder="subscriber id">
+                </div>
+                <div class="form-group">
+                    <label>Invoice / Sale ID</label>
+                    <input id="mpSaleId" class="form-control" placeholder="sale id">
+                </div>
+                <div class="form-group">
+                    <label>Phone (MSISDN)</label>
+                    <input id="mpPhone" class="form-control" placeholder="2547xxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input id="mpAmount" class="form-control" placeholder="amount">
+                </div>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <button id="mpSendBtn" class="btn btn-primary">Send STK Push</button>
+                    <small id="mpResult" class="text-muted"></small>
+                </div>
+                <div id="mpResponse" style="margin-top:0.75rem; font-size:0.92rem;"></div>
+            </div>
+        </div>
+
+        <!-- Paystack Card -->
+        <div class="card">
+            <div class="card-header"><strong>Pay by Card (Paystack)</strong></div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Subscriber ID</label>
+                    <input id="psSubId" class="form-control" placeholder="subscriber id">
+                </div>
+                <div class="form-group">
+                    <label>Invoice / Sale ID</label>
+                    <input id="psSaleId" class="form-control" placeholder="sale id">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input id="psEmail" class="form-control" placeholder="customer@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input id="psAmount" class="form-control" placeholder="amount">
+                </div>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <button id="psInitBtn" class="btn btn-primary">Initialize Card Payment</button>
+                    <a id="psOpenBtn" class="btn btn-secondary" style="display:none;" target="_blank">Open Paystack Checkout</a>
+                </div>
+                <div id="psResponse" style="margin-top:0.75rem; font-size:0.92rem;"></div>
+            </div>
+        </div>
+    
+        <!-- POS Terminal -->
+        <div class="card">
+            <div class="card-header"><strong>POS Terminal</strong></div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Subscriber ID</label>
+                    <input id="posSubId" class="form-control" placeholder="subscriber id">
+                </div>
+                <div class="form-group">
+                    <label>Invoice / Sale ID</label>
+                    <input id="posSaleId" class="form-control" placeholder="sale id">
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input id="posAmount" class="form-control" placeholder="amount">
+                </div>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <button id="posCreateBtn" class="btn btn-primary">Send To POS Terminal</button>
+                    <button id="posCheckBtn" class="btn btn-secondary">Check POS Result (simulate webhook)</button>
+                </div>
+                <div id="posResponse" style="margin-top:0.75rem; font-size:0.92rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment history -->
+    <div class="table-container" style="margin-top: 1.25rem;">
+        <h3>Payment History</h3>
+        <p class="text-muted">Recent ISP payment attempts. If your server exposes a payment history API this will populate.</p>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Provider</th>
+                    <th>Subscriber</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody id="ispPaymentsHistoryBody">
+                <tr><td colspan="6" class="text-muted">Loading…</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>

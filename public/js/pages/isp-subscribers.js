@@ -94,6 +94,8 @@ function renderSubscribers(subscribers) {
             <td>${speedLabel(sub)}</td>
             <td>${sub.billing_cycle_end
                     ? new Date(sub.billing_cycle_end).toLocaleDateString() : '—'}</td>
+            <td>${sub.grace_until
+                    ? new Date(sub.grace_until).toLocaleDateString() : '—'}</td>
             <td>${statusBadge(sub.status)}</td>
             <td>${Number(sub.is_online)
                     ? '<span class="badge badge-success">online</span>'
@@ -239,6 +241,7 @@ async function showDetail(id) {
                 <div>
                     <p><strong>Cycle:</strong>
                         ${s.billing_cycle_start || '—'} → ${s.billing_cycle_end || '—'}</p>
+                    <p><strong>Grace until:</strong> ${s.grace_until || '—'}</p>
                     <p><strong>Total used:</strong> ${fmtBytes(s.usage?.totals?.totalBytes)}</p>
                     <p><strong>↑ Upload:</strong> ${fmtBytes(s.usage?.totals?.uploadBytes)}</p>
                     <p><strong>↓ Download:</strong> ${fmtBytes(s.usage?.totals?.downloadBytes)}</p>

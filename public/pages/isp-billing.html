@@ -1,13 +1,70 @@
-<!-- ISP Billing — billing work area placeholder -->
+<!-- ISP Billing — billing dashboard for due subscribers and manual actions -->
 <div class="page-actions">
-    <div style="display: flex; gap: 1rem; align-items: center;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
         <button id="ispBillingRefreshBtn" class="btn btn-secondary">
             <i class="fas fa-sync"></i> Refresh
         </button>
+        <div class="form-group" style="margin: 0;">
+            <label>Due before</label>
+            <input type="date" id="ispBillingDueBefore" class="form-control" style="min-width: 180px;">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Status</label>
+            <select id="ispBillingStatusFilter" class="form-control" style="width: 180px;">
+                <option value="">All due</option>
+                <option value="active">Active</option>
+                <option value="grace">Grace</option>
+            </select>
+        </div>
+        <button id="ispBillingFilterBtn" class="btn btn-secondary">Apply</button>
     </div>
 </div>
 
-<div class="page-body">
-    <h2>ISP Billing</h2>
-    <p class="text-muted">Billing workflow pages are under construction. Use this area for ISP billing actions and status.</p>
+<div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+    <div class="stat-card">
+        <div class="stat-label">Due Subscribers</div>
+        <div class="stat-value" id="ispBillingTotalDue">–</div>
+        <div class="stat-sub">Total due today or earlier</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Active due</div>
+        <div class="stat-value" id="ispBillingActiveDue">–</div>
+        <div class="stat-sub">Not yet moved to grace</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">In grace</div>
+        <div class="stat-value" id="ispBillingGraceDue">–</div>
+        <div class="stat-sub">Still online while overdue</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-value" id="ispBillingOverdueCount">–</div>
+        <div class="stat-sub">Days past cycle end</div>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Due subscribers</h3>
+    <p class="text-muted" style="margin-top: 0.25rem;">
+        Uses <code>GET /api/isp/subscribers/billable</code>. Billing actions are manual from this dashboard until the automatic engine is connected.
+    </p>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Package</th>
+                <th>Due Date</th>
+                <th>Grace Until</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ispBillingBody">
+            <tr><td colspan="10" class="text-muted">Loading…</td></tr>
+        </tbody>
+    </table>
 </div>

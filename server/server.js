@@ -44,6 +44,8 @@ import configRoutes from './routes/config.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import roleRoutes from './routes/role.routes.js';
 import ispRoutes from './routes/isp.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+
 
 // Load environment variables
 dotenv.config();
@@ -192,8 +194,13 @@ app.use('/api/petty-cash', pettyCashRoutes);
 app.use('/api/monthly-costs', monthlyCostsRoutes);
 app.use('/api/roles', roleRoutes);
 
-// ISP module routes (Section A: hotspot, PPPoE, RADIUS, vouchers, usage)
+// ISP module routes
 app.use('/api/isp', ispRoutes);
+
+
+// Payment routes
+// M-Pesa, Paystack, POS, payment history
+app.use('/api/payment', paymentRoutes);
 
 
 // QZ Tray routes - mount at both /qz (for certificate) and /api/qz (for signing)
