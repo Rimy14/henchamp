@@ -1,6 +1,7 @@
 import { query, transaction } from '../config/database.js';
 import logger from '../utils/logger.js';
 import Decimal from 'decimal.js';
+import cache from '../utils/cache.js';
 
 /**
  * Passwordless Customer Login
@@ -381,6 +382,10 @@ export async function placeCustomerOrder(req, res) {
                 deliveryNumber: delivery_number
             };
         });
+
+        // Invalidate items and reports/dashboard cache
+        cache.deletePattern('items:*');
+        cache.deletePattern('reports:*');
 
         res.json({
             success: true,
