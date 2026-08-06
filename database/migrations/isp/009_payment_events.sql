@@ -1,0 +1,13 @@
+CREATE TABLE payment_events (
+
+id INT AUTO_INCREMENT PRIMARY KEY,
+
+provider VARCHAR(30) NOT NULL,
+
+reference VARCHAR(100),
+
+payload JSON,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
