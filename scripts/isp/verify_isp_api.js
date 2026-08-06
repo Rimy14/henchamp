@@ -17,7 +17,7 @@ dotenv.config();
 
 const BASE = process.env.APP_URL || 'http://localhost:7001';
 const USERNAME = process.env.VERIFY_USER || 'Admin';
-const PASSWORD = process.env.VERIFY_PASS || 'Admin@123';
+const PASSWORD = process.env.VERIFY_PASS || 'Admin123';
 
 let cookie = null;
 let passed = 0;

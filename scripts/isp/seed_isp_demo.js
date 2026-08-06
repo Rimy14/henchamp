@@ -25,7 +25,7 @@ const voucherService = await import('../../server/services/isp/voucher.service.j
 const nasService = await import('../../server/services/isp/nas.service.js');
 const { encrypt, generateSecret } = await import('../../server/services/isp/crypto.js');
 
-const DEV_ADMIN_PASSWORD = 'Admin@123';
+const DEV_ADMIN_PASSWORD = 'Admin123';
 
 const log = {
     info: (m) => console.log(`   ${m}`),
