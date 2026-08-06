@@ -241,6 +241,22 @@ export default class Frame {
                         <span class="nav-icon"><i class="fas fa-network-wired"></i></span>
                         <span>Subscribers</span>
                     </a>
+                    <a href="#/isp/billing" class="nav-link" data-route="/isp/billing" data-tooltip="ISP Billing">
+                        <span class="nav-icon"><i class="fas fa-file-invoice"></i></span>
+                        <span>Billing</span>
+                    </a>
+                    <a href="#/isp/payments" class="nav-link" data-route="/isp/payments" data-tooltip="ISP Payments">
+                        <span class="nav-icon"><i class="fas fa-credit-card"></i></span>
+                        <span>Payments</span>
+                    </a>
+                    <a href="#/isp/packages" class="nav-link" data-route="/isp/packages" data-tooltip="ISP Packages">
+                        <span class="nav-icon"><i class="fas fa-boxes"></i></span>
+                        <span>Packages</span>
+                    </a>
+                    <a href="#/isp/nas" class="nav-link" data-route="/isp/nas" data-tooltip="ISP NAS">
+                        <span class="nav-icon"><i class="fas fa-server"></i></span>
+                        <span>NAS</span>
+                    </a>
                     <a href="#/isp/vouchers" class="nav-link" data-route="/isp/vouchers" data-tooltip="Hotspot Vouchers">
                         <span class="nav-icon"><i class="fas fa-ticket-alt"></i></span>
                         <span>Vouchers</span>

@@ -227,6 +227,38 @@ class AppShell {
             allowedRoles: ['Admin', 'Coordinator']
         });
 
+        router.addRoute('/isp/billing', {
+            title: 'ISP Billing',
+            view: '/pages/isp-billing.html',
+            script: '/js/pages/isp-billing.js',
+            init: 'initIspBilling',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
+        router.addRoute('/isp/packages', {
+            title: 'ISP Packages',
+            view: '/pages/isp-packages.html',
+            script: '/js/pages/isp-packages.js',
+            init: 'initIspPackages',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
+        router.addRoute('/isp/nas', {
+            title: 'ISP NAS',
+            view: '/pages/isp-nas.html',
+            script: '/js/pages/isp-nas.js',
+            init: 'initIspNas',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
+        router.addRoute('/isp/payments', {
+            title: 'ISP Payments',
+            view: '/pages/isp-payments.html',
+            script: '/js/pages/isp-payments.js',
+            init: 'initIspPayments',
+            allowedRoles: ['Admin', 'Coordinator']
+        });
+
         router.addRoute('/isp/vouchers', {
             title: 'Hotspot Vouchers',
             view: '/pages/isp-vouchers.html',
