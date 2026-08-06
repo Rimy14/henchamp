@@ -7,7 +7,6 @@ import {
 from '../services/payment/payment.service.js';
 
 
-
 import {
     processMpesaCallback
 }
@@ -29,100 +28,175 @@ from '../services/payment/paystack/webhook.service.js';
 
 
 
-const router =
-express.Router();
+import {
+    createPOSTransaction
+}
+from '../services/payment/pos/transaction.service.js';
+
+
+
+import {
+    processPOSWebhook
+}
+from '../services/payment/pos/webhook.service.js';
+
+
+
+const router = express.Router();
 
 
 
 
 // =======================
-// DAR AJA
+// DARAJA M-PESA
 // =======================
 
 
 router.post(
-'/mpesa/stk',
-async(req,res)=>{
+    '/mpesa/stk',
+    async(req,res)=>{
+
+        const result =
+        await createMpesaPayment(
+            req.body
+        );
 
 
-    const result =
-    await createMpesaPayment(
-        req.body
-    );
+        res.json(result);
 
-
-    res.json(result);
-
-
-});
-
+    }
+);
 
 
 
 router.post(
-'/mpesa/callback',
-async(req,res)=>{
+    '/mpesa/callback',
+    async(req,res)=>{
 
 
-    await processMpesaCallback(
-        req.body
-    );
+        await processMpesaCallback(
+            req.body
+        );
 
 
-    res.json({
+        res.json({
 
-        ResultCode:0,
+            ResultCode:0,
 
-        ResultDesc:"Accepted"
+            ResultDesc:"Accepted"
 
-    });
+        });
 
+    }
+);
 
-});
 
 
 
 
 // =======================
-// PAYSTACK
+// PAYSTACK CARD PAYMENT
 // =======================
 
 
 router.post(
-'/paystack/initiate',
-async(req,res)=>{
+    '/paystack/initiate',
+    async(req,res)=>{
 
 
-    const result =
-    await createPaystackPayment(
-        req.body
-    );
+        const result =
+        await createPaystackPayment(
+            req.body
+        );
 
 
-    res.json(result);
+        res.json(result);
 
-
-});
-
-
+    }
+);
 
 
 
 router.post(
-'/paystack/webhook',
-async(req,res)=>{
+    '/paystack/webhook',
+    async(req,res)=>{
 
 
-    const result =
-    await processPaystackWebhook(
-        req.body
-    );
+        const result =
+        await processPaystackWebhook(
+            req.body
+        );
 
 
-    res.json(result);
+        res.json(result);
+
+    }
+);
 
 
-});
+
+
+
+
+// =======================
+// FUTURE POS TERMINAL
+// =======================
+// 
+// Used when a physical card terminal
+// is connected in future.
+//
+// Flow:
+//
+// POS Machine
+//      |
+//      ↓
+// /pos/create
+//      |
+//      ↓
+// isp_payments
+//      |
+//      ↓
+// /pos/webhook
+//      |
+//      ↓
+// Invoice Paid
+// Subscriber Activated
+//
+
+
+router.post(
+    '/pos/create',
+    async(req,res)=>{
+
+
+        const result =
+        await createPOSTransaction(
+            req.body
+        );
+
+
+        res.json(result);
+
+    }
+);
+
+
+
+router.post(
+    '/pos/webhook',
+    async(req,res)=>{
+
+
+        const result =
+        await processPOSWebhook(
+            req.body
+        );
+
+
+        res.json(result);
+
+    }
+);
 
 
 
