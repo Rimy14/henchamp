@@ -46,6 +46,7 @@ export async function createMpesaPayment({
         (
             subscriber_id,
             sale_id,
+            payment_provider,
             checkout_request_id,
             merchant_request_id,
             phone,
@@ -53,13 +54,15 @@ export async function createMpesaPayment({
         )
 
         VALUES
-        (?,?,?,?,?,?)
+        (?,?,?,?,?,?,?)
         `,
         [
 
             subscriberId,
 
             saleId,
+
+            'MPESA',
 
             response.checkoutRequestId,
 

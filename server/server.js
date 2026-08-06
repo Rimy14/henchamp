@@ -44,6 +44,7 @@ import configRoutes from './routes/config.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import roleRoutes from './routes/role.routes.js';
 import ispRoutes from './routes/isp.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -195,6 +196,8 @@ app.use('/api/roles', roleRoutes);
 // ISP module routes (Section A: hotspot, PPPoE, RADIUS, vouchers, usage)
 app.use('/api/isp', ispRoutes);
 
+// Payment routes
+app.use('/api/payment', paymentRoutes);
 
 // QZ Tray routes - mount at both /qz (for certificate) and /api/qz (for signing)
 app.use('/qz', qzRoutes);  // For certificate: /qz/digital-certificate.txt

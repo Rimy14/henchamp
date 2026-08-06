@@ -1,23 +1,22 @@
 /**
  * M-Pesa Callback Service
  *
- * Handles Safaricom Daraja callback.
- *
- * Flow:
+ * B6 Reusable Payment Flow:
  *
  * Daraja Callback
  *        |
  *        v
- * isp_payments
+ * Normalize callback
  *        |
  *        v
- * sales invoice
+ * Complete reusable payment
  *        |
  *        v
- * ISP subscription
+ * payments table
  *        |
  *        v
- * Subscriber restore
+ * ISP completion (if ISP payment)
+ *
  */
 
 
@@ -39,65 +38,78 @@ import {
 from '../../isp/lifecycle.service.js';
 
 
+import {
+    completeReusablePayment
+}
+from '../payment-handler.service.js';
+
+
 
 export async function processMpesaCallback(data){
 
 
-    const {
+    const callbackResult =
+    await completeReusablePayment({
 
-        CheckoutRequestID,
+        payload:data,
 
-        ResultCode,
+        provider:'MPESA'
 
-        MpesaReceiptNumber
-
-
-    } = data;
+    });
 
 
 
-    const payments =
-    await query(
-        `
-        SELECT *
-        FROM isp_payments
-        WHERE checkout_request_id=?
-        `,
-        [
-            CheckoutRequestID
-        ]
-    );
+    const normalized =
+    callbackResult.normalized;
 
 
 
-    if(!payments.length){
+    if(!normalized){
 
         throw new Error(
-            "Payment record not found"
+            "Unable to normalize M-Pesa callback"
         );
 
     }
 
 
 
-    const payment =
-    payments[0];
+    /**
+     * Check ISP mapping
+     *
+     * Existing ISP module support
+     */
+
+    const ispPayments =
+    await query(
+        `
+        SELECT *
+        FROM isp_payments
+        WHERE checkout_request_id=?
+        LIMIT 1
+        `,
+        [
+            normalized.checkoutRequestId
+        ]
+    );
 
 
 
     /**
-     * Duplicate callback protection
+     * Generic B6 payment
      *
-     * Safaricom can resend callbacks.
+     * No ISP mapping required
      */
-    if(payment.status === 'success'){
+
+    if(!ispPayments.length){
 
         return {
 
-            success:true,
+            success:
+            callbackResult.status === 'success',
 
-            message:
-            "Payment already processed"
+            payment:
+            callbackResult
 
         };
 
@@ -105,7 +117,34 @@ export async function processMpesaCallback(data){
 
 
 
-    if(ResultCode === 0){
+    const ispPayment =
+    ispPayments[0];
+
+
+
+    /**
+     * Duplicate protection
+     */
+
+    if(
+        ispPayment.status === 'success'
+    ){
+
+        return {
+
+            success:true,
+
+            message:
+            "ISP payment already processed"
+
+        };
+
+    }
+
+
+
+
+    if(normalized.resultCode === 0){
 
 
 
@@ -119,9 +158,9 @@ export async function processMpesaCallback(data){
             `,
             [
 
-                MpesaReceiptNumber,
+                normalized.receipt,
 
-                payment.id
+                ispPayment.id
 
             ]
         );
@@ -130,9 +169,9 @@ export async function processMpesaCallback(data){
 
         await markInvoicePaid(
 
-            payment.sale_id,
+            ispPayment.sale_id,
 
-            MpesaReceiptNumber
+            normalized.receipt
 
         );
 
@@ -140,7 +179,7 @@ export async function processMpesaCallback(data){
 
         await restoreSubscriber(
 
-            payment.subscriber_id
+            ispPayment.subscriber_id
 
         );
 
@@ -161,9 +200,10 @@ export async function processMpesaCallback(data){
             `,
             [
 
-                "Payment failed",
+                normalized.resultDescription ||
+                'Payment failed',
 
-                payment.id
+                ispPayment.id
 
             ]
         );
@@ -177,7 +217,11 @@ export async function processMpesaCallback(data){
 
 
         success:
-        ResultCode === 0
+        normalized.resultCode === 0,
+
+
+        payment:
+        callbackResult
 
 
     };
