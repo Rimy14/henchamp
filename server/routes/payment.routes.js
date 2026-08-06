@@ -1,9 +1,11 @@
 import express from 'express';
 
+
 import {
     createMpesaPayment
 }
 from '../services/payment/payment.service.js';
+
 
 
 import {
@@ -13,9 +15,29 @@ from '../services/payment/daraja/callback.service.js';
 
 
 
+import {
+    createPaystackPayment
+}
+from '../services/payment/paystack/transaction.service.js';
+
+
+
+import {
+    processPaystackWebhook
+}
+from '../services/payment/paystack/webhook.service.js';
+
+
+
 const router =
 express.Router();
 
+
+
+
+// =======================
+// DAR AJA
+// =======================
 
 
 router.post(
@@ -33,7 +55,6 @@ async(req,res)=>{
 
 
 });
-
 
 
 
@@ -58,6 +79,51 @@ async(req,res)=>{
 
 
 });
+
+
+
+
+// =======================
+// PAYSTACK
+// =======================
+
+
+router.post(
+'/paystack/initiate',
+async(req,res)=>{
+
+
+    const result =
+    await createPaystackPayment(
+        req.body
+    );
+
+
+    res.json(result);
+
+
+});
+
+
+
+
+
+router.post(
+'/paystack/webhook',
+async(req,res)=>{
+
+
+    const result =
+    await processPaystackWebhook(
+        req.body
+    );
+
+
+    res.json(result);
+
+
+});
+
 
 
 
